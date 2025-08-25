@@ -42,7 +42,7 @@ const SignupPage = () => {
       adminCode: role === 'user' ? '' : prev.adminCode
     }));
     setShowAdminCode(role === 'admin');
-    
+
     // Clear admin code error if switching back to user
     if (role === 'user' && errors.adminCode) {
       setErrors(prev => ({
@@ -73,33 +73,47 @@ const SignupPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
-    // Simulate successful signup
-    const userData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      role: formData.role,
-      id: Date.now(), // Simple ID generation
-      isVerified: true
-    };
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          confirm_password: formData.confirmPassword,
+          role: formData.role,
+          adminCode: formData.adminCode,
+        }),
+      });
 
-    // Store user data (in real app, this would be handled by backend)
-    sessionStorage.setItem('userData', JSON.stringify(userData));
+      const data = await response.json();
 
-    console.log('Signup form submitted:', userData);
-    
-    // Redirect based on role
-    if (formData.role === 'admin') {
-      navigate('/dashboard'); // Admin goes to dashboard
-    } else {
-      navigate('/landingpage'); // Regular user goes to landing page
+      if (response.ok) {
+        console.log("User registered:", data);
+        sessionStorage.setItem("userData", JSON.stringify(data.user));
+
+        if (data.user.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/landingpage");
+        }
+      } else {
+        console.error("Registration failed:", data);
+        setErrors(data);
+      }
+    } catch (err) {
+      console.error("Error:", err);
     }
   };
 
@@ -327,10 +341,10 @@ const SignupPage = () => {
         <div style={styles.rightPanel}>
           <div style={styles.formContainer}>
             <h2 style={styles.title}>Sign Up</h2>
-            
+
             {/* Role Selector */}
             <div style={styles.roleSelector}>
-              <div 
+              <div
                 style={{
                   ...styles.roleOption,
                   ...(formData.role === 'user' ? styles.roleOptionActive : styles.roleOptionInactive)
@@ -339,7 +353,7 @@ const SignupPage = () => {
               >
                 👤 User Account
               </div>
-              <div 
+              <div
                 style={{
                   ...styles.roleOption,
                   ...(formData.role === 'admin' ? styles.roleOptionActive : styles.roleOptionInactive)
