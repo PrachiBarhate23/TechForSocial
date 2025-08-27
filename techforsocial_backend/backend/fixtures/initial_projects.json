@@ -1,0 +1,103 @@
+[
+  {
+    "model": "backend.project",
+    "pk": 1,
+    "fields": {
+      "title": "AutoBuddys",
+      "description": "Smart automotive assistant application for vehicle maintenance and diagnostics. This comprehensive platform helps users track their vehicle maintenance schedules, diagnose common issues, and connect with certified mechanics in their area.",
+      "tags": ["React", "Node.js", "MongoDB"],
+      "category": "Web App",
+      "team_name": "Tech Innovators",
+      "website_link": "https://autobuddys.example.com",
+      "image_url": "https://example.com/assets/autobuddys.png",
+      "publications": [
+        "AutoBuddys: A Smart Automotive Assistant. Journal of Automotive Technology, 2023.",
+        "Vehicle Diagnostics Using IoT and Machine Learning. IEEE Conference on Automotive Systems, 2023."
+      ],
+      "created_at": "2023-08-01T10:00:00Z",
+      "updated_at": "2023-08-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "backend.project",
+    "pk": 2,
+    "fields": {
+      "title": "Analytical Study of Autism",
+      "description": "Data analysis and research project on autism spectrum disorders with diagnostic tools. This research focuses on identifying patterns in autism spectrum disorders through advanced data analytics and machine learning techniques.",
+      "tags": ["Python", "Data Science", "Research"],
+      "category": "Research",
+      "team_name": "Healthcare AI Lab",
+      "website_link": "",
+      "image_url": "https://example.com/assets/autism-study.png",
+      "publications": [
+        "F. Britto and D. R. Kalbande, \"Analysis of technological advances in Autism,\" 2017 International Conference on Inventive Computing and Informatics (ICICI), Coimbatore, 2017, pp. 776-781"
+      ],
+      "created_at": "2023-08-02T10:00:00Z",
+      "updated_at": "2023-08-02T10:00:00Z"
+    }
+  },
+  {
+    "model": "backend.project",
+    "pk": 3,
+    "fields": {
+      "title": "Track-On-Park",
+      "description": "Smart parking management system with real-time tracking and reservations. This IoT-based solution helps users find available parking spots in real-time and allows advance booking for hassle-free parking.",
+      "tags": ["IoT", "React", "Firebase"],
+      "category": "IoT",
+      "team_name": "Smart City Solutions",
+      "website_link": "https://trackonpark.example.com",
+      "image_url": "https://example.com/assets/track-on-park.png",
+      "publications": [],
+      "created_at": "2023-08-03T10:00:00Z",
+      "updated_at": "2023-08-03T10:00:00Z"
+    }
+  },
+  {
+    "model": "backend.project",
+    "pk": 4,
+    "fields": {
+      "title": "Mosquito Disease Analysis",
+      "description": "Machine learning model for analyzing mosquito-borne disease patterns and prevention strategies.",
+      "tags": ["ML", "Python", "Healthcare"],
+      "category": "Machine Learning",
+      "team_name": "Health Analytics Team",
+      "website_link": "",
+      "image_url": "https://example.com/assets/mosquito-analysis.png",
+      "publications": [],
+      "created_at": "2023-08-04T10:00:00Z",
+      "updated_at": "2023-08-04T10:00:00Z"
+    }
+  },
+  {
+    "model": "backend.project",
+    "pk": 5,
+    "fields": {
+      "title": "Skin Disease Detection",
+      "description": "AI-powered dermatological condition detection using computer vision and deep learning.",
+      "tags": ["AI", "Computer Vision", "Healthcare"],
+      "category": "Machine Learning",
+      "team_name": "Medical AI Lab",
+      "website_link": "",
+      "image_url": "https://example.com/assets/skin-disease-detection.png",
+      "publications": [],
+      "created_at": "2023-08-05T10:00:00Z",
+      "updated_at": "2023-08-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "backend.project",
+    "pk": 6,
+    "fields": {
+      "title": "Sign Language App",
+      "description": "Android application for real-time sign language recognition and translation using machine learning.",
+      "tags": ["Android", "ML", "Accessibility"],
+      "category": "Mobile App",
+      "team_name": "Accessibility Team",
+      "website_link": "",
+      "image_url": "https://example.com/assets/sign-language-app.png",
+      "publications": [],
+      "created_at": "2023-08-06T10:00:00Z",
+      "updated_at": "2023-08-06T10:00:00Z"
+    }
+  }
+]

@@ -2,10 +2,11 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets, permissions, filters
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from .models import Project 
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, ProjectSerializer
 
 User = get_user_model()
 
@@ -60,3 +61,25 @@ def profile(request):
     Returns profile details of the currently authenticated user.
     """
     return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
+
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all().order_by("-created_at")
+    serializer_class = ProjectSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["title", "description"]
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category = self.request.query_params.get("category")
+        tag = self.request.query_params.get("tag")
+        if category:
+            queryset = queryset.filter(category=category)
+        if tag:
+            queryset = queryset.filter(tags__contains=[tag])
+        return queryset

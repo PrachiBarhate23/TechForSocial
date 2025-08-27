@@ -19,6 +19,8 @@ import autismGameImg from '../assets/images/quiz.png';
 import Header from '../components/Header';
 import Footer from '../components/footer';
 
+const API_URL = "http://127.0.0.1:8000/api/projects/";
+
 // Project Details Modal Component
 const ProjectDetailsModal = ({ isOpen, onClose, project, userRole, onEdit, onDelete }) => {
   if (!isOpen || !project) return null;
@@ -810,106 +812,43 @@ const ProjectsPage = () => {
 
   const categories = ['All', 'Web App', 'Machine Learning', 'IoT', 'Mobile App', 'Research', 'Tools', 'Game'];
 
-  // Mock projects data - replace with API call
-  const mockProjects = [
-    {
-      id: 1,
-      title: 'AutoBuddys',
-      description: 'Smart automotive assistant application for vehicle maintenance and diagnostics. This comprehensive platform helps users track their vehicle maintenance schedules, diagnose common issues, and connect with certified mechanics in their area.',
-      tags: ['React', 'Node.js', 'MongoDB'],
-      category: 'Web App',
-      teamName: 'Tech Innovators',
-      websiteLink: 'https://autobuddys.example.com',
-      image: autobuddysImg,
-      publications: [
-        'AutoBuddys: A Smart Automotive Assistant. Journal of Automotive Technology, 2023.',
-        'Vehicle Diagnostics Using IoT and Machine Learning. IEEE Conference on Automotive Systems, 2023.'
-      ]
-    },
-    {
-      id: 2,
-      title: 'Analytical Study of Autism',
-      description: 'Data analysis and research project on autism spectrum disorders with diagnostic tools. This research focuses on identifying patterns in autism spectrum disorders through advanced data analytics and machine learning techniques.',
-      tags: ['Python', 'Data Science', 'Research'],
-      category: 'Research',
-      teamName: 'Healthcare AI Lab',
-      websiteLink: '',
-      image: autismStudyImg ,
-      publications: [
-        'F. Britto and D. R. Kalbande, "Analysis of technological advances in Autism," 2017 International Conference on Inventive Computing and Informatics (ICICI), Coimbatore, 2017, pp. 776-781'
-      ]
-    },
-    {
-      id: 3,
-      title: 'Track-On-Park',
-      description: 'Smart parking management system with real-time tracking and reservations. This IoT-based solution helps users find available parking spots in real-time and allows advance booking for hassle-free parking.',
-      tags: ['IoT', 'React', 'Firebase'],
-      category: 'IoT',
-      teamName: 'Smart City Solutions',
-      websiteLink: 'https://trackonpark.example.com',
-      image: trackOnParkImg,
-      publications: []
-    },
-    {
-      id: 4,
-      title: 'Mosquito Disease Analysis',
-      description: 'Machine learning model for analyzing mosquito-borne disease patterns and prevention strategies.',
-      tags: ['ML', 'Python', 'Healthcare'],
-      category: 'Machine Learning',
-      teamName: 'Health Analytics Team',
-      websiteLink: '',
-      image:  mosquitoImg,
-      publications: []
-    },
-    {
-      id: 5,
-      title: 'Skin Disease Detection',
-      description: 'AI-powered dermatological condition detection using computer vision and deep learning.',
-      tags: ['AI', 'Computer Vision', 'Healthcare'],
-      category: 'Machine Learning',
-      teamName: 'Medical AI Lab',
-      websiteLink: '',
-      image: skinImg,
-      publications: []
-    },
-    {
-      id: 6,
-      title: 'Sign Language App',
-      description: 'Android application for real-time sign language recognition and translation using machine learning.',
-      tags: ['Android', 'ML', 'Accessibility'],
-      category: 'Mobile App',
-      teamName: 'Accessibility Team',
-      websiteLink: '',
-      image: signLangImg,
-      publications: []
-    }
-  ];
-
-  // Simulate fetching user role and projects
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // Simulate API calls
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Get user role from localStorage or JWT
-       // Read from the same "user" object set by LoginTestPage
-const storedUser = JSON.parse(localStorage.getItem('user'));
-setUserRole(storedUser?.role || 'user'); // role is "admin" or "user"
+  const fetchProjects = async () => {
+    setLoading(true);
+    try {
+      // Get user role from localStorage or JWT
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      setUserRole(storedUser?.role || 'user');
 
-        
-        // Fetch projects from API
-        setProjects(mockProjects);
-      } catch (error) {
-        showNotification('Failed to load projects', 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Build query params for category and search
+      let url = API_URL;
+      const params = [];
+      if (selectedCategory && selectedCategory !== "All") params.push(`category=${encodeURIComponent(selectedCategory)}`);
+      if (searchTerm) params.push(`search=${encodeURIComponent(searchTerm)}`);
+      if (params.length) url += "?" + params.join("&");
 
-    fetchData();
-  }, []);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch projects");
+      const data = await response.json();
+
+      // Map backend fields to frontend fields
+      setProjects(
+        data.map(project => ({
+          ...project,
+          image: project.image_url || "/src/assets/images/logo-techforsocial.png",
+          teamName: project.team_name,
+          websiteLink: project.website_link,
+        }))
+      );
+    } catch (error) {
+      showNotification('Failed to load projects', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProjects();
+}, [selectedCategory, searchTerm]);
 
   const showNotification = (message, type) => {
     setNotification({ message, type, isVisible: true });
@@ -943,42 +882,35 @@ setUserRole(storedUser?.role || 'user'); // role is "admin" or "user"
   };
 
   const handleDeleteProject = async (projectId) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        setProjects(prev => prev.filter(p => p.id !== projectId));
-        showNotification('Project deleted successfully', 'success');
-      } catch (error) {
-        showNotification('Failed to delete project', 'error');
-      }
-    }
-  };
-
-  const handleSaveProject = async (projectData) => {
+  if (window.confirm('Are you sure you want to delete this project?')) {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (editingProject) {
-        // Update existing project
-        setProjects(prev => 
-          prev.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, image: editingProject.image } : p)
-        );
-        showNotification('Project updated successfully', 'success');
-      } else {
-        // Add new project
-        const newProject = { ...projectData, id: Date.now(), image: 'https://via.placeholder.com/150' }; // Placeholder image
-        setProjects(prev => [...prev, newProject]);
-        showNotification('Project created successfully', 'success');
-      }
-      
-      setIsFormModalOpen(false);
+      // TODO: Implement DELETE API call here if you want real backend deletion
+      setProjects(prev => prev.filter(p => p.id !== projectId));
+      showNotification('Project deleted successfully', 'success');
     } catch (error) {
-      showNotification('Failed to save project', 'error');
+      showNotification('Failed to delete project', 'error');
     }
-  };
+  }
+};
+
+const handleSaveProject = async (projectData) => {
+  try {
+    // TODO: Implement POST/PUT API call here if you want real backend creation/update
+    if (editingProject) {
+      setProjects(prev => 
+        prev.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, image: editingProject.image } : p)
+      );
+      showNotification('Project updated successfully', 'success');
+    } else {
+      const newProject = { ...projectData, id: Date.now(), image: 'https://via.placeholder.com/150' };
+      setProjects(prev => [...prev, newProject]);
+      showNotification('Project created successfully', 'success');
+    }
+    setIsFormModalOpen(false);
+  } catch (error) {
+    showNotification('Failed to save project', 'error');
+  }
+};
 
   const pageStyle = {
     backgroundImage: `url(${backgroundImage})`,
