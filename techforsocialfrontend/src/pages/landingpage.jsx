@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Header from "../components/Header";
-import TechnicalBackground from "../components/TechnicalBackground";
-import "../styles/App.css";
+import "../styles/App.css"; // ✅ This will use your updated green-pink theme CSS
 import { Link } from "react-router-dom";
 
 const TrueFocus = ({
   sentence = "TechForSocial",
   manualMode = false,
   blurAmount = 5,
-  borderColor = "#00d4aa",
-  glowColor = "rgba(0, 212, 170, 0.6)",
+  borderColor = "#00aa77", // ✅ green accent
+  glowColor = "rgba(255, 105, 180, 0.6)", // ✅ soft pink glow
   animationDuration = 0.5,
   pauseBetweenAnimations = 2,
 }) => {
@@ -19,7 +18,12 @@ const TrueFocus = ({
   const [lastActiveIndex, setLastActiveIndex] = useState(null);
   const containerRef = useRef(null);
   const wordRefs = useRef([]);
-  const [focusRect, setFocusRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [focusRect, setFocusRect] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     if (!manualMode && words.length > 1) {
@@ -109,15 +113,13 @@ const TrueFocus = ({
 function LandingPage() {
   return (
     <div className="App">
-      {/* Technical Background */}
-      <TechnicalBackground />
-
-      {/* Header Navigation */}
+      {/* ✅ Removed TechnicalBackground */}
       <Header />
 
       {/* Hero Section */}
       <main className="hero-section">
         <div className="hero-content">
+          {/* Hero Title */}
           <motion.div
             className="hero-title"
             initial={{ opacity: 0, y: 50 }}
@@ -126,8 +128,8 @@ function LandingPage() {
           >
             <TrueFocus
               sentence="TechForSocial"
-              borderColor="#00d4aa"
-              glowColor="rgba(0, 212, 170, 0.6)"
+              borderColor="#00aa77"
+              glowColor="rgba(255, 105, 180, 0.6)"
             />
             <motion.div
               className="hero-separator"
@@ -147,16 +149,18 @@ function LandingPage() {
             </motion.h2>
           </motion.div>
 
+          {/* Hero Description */}
           <motion.p
             className="hero-description"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.5 }}
           >
-            Founded by Dr. Dhananjay Kalbande, TechForSocial brings together research,
-            innovation, and technology to create real-world impact.
+            Founded by Dr. Dhananjay Kalbande, TechForSocial brings together
+            research, innovation, and technology to create real-world impact.
           </motion.p>
 
+          {/* Hero Buttons */}
           <motion.div
             className="hero-buttons"
             initial={{ opacity: 0, y: 40 }}
@@ -164,22 +168,22 @@ function LandingPage() {
             transition={{ duration: 0.8, delay: 2 }}
           >
             <Link to="/projects">
-  <motion.button
-    className="btn-primary"
-    whileHover={{
-      scale: 1.05,
-      boxShadow: "0 10px 30px rgba(0, 212, 170, 0.4)",
-    }}
-    whileTap={{ scale: 0.95 }}
-  >
-    Explore Projects
-  </motion.button>
-</Link>
+              <motion.button
+                className="btn-primary"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 10px 30px rgba(0, 170, 119, 0.4)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Explore Projects
+              </motion.button>
+            </Link>
             <motion.button
               className="btn-secondary"
               whileHover={{
                 scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                backgroundColor: "rgba(255, 105, 180, 0.1)",
               }}
               whileTap={{ scale: 0.95 }}
             >
@@ -188,6 +192,62 @@ function LandingPage() {
           </motion.div>
         </div>
       </main>
+
+      {/* Cards Section */}
+      <section className="cards-section">
+        <div className="cards-container">
+          <motion.div className="info-card">
+            <h3>🌍 Social Impact</h3>
+            <p>
+              Driving change through technology by solving real-world challenges
+              in healthcare, education, and sustainability.
+            </p>
+            <p>
+              Our initiatives include low-cost health monitoring devices,
+              AI-powered educational tools, and community-driven green
+              technologies that empower underprivileged sections of society.
+            </p>
+            <p>
+              By working closely with NGOs and government bodies, we ensure our
+              solutions are scalable and reach the people who need them most.
+            </p>
+          </motion.div>
+
+          <motion.div className="info-card">
+            <h3>💡 Innovation & Research</h3>
+            <p>
+              Combining cutting-edge research with practical innovations to
+              create solutions that drive measurable impact.
+            </p>
+            <p>
+              Our team works on AI, IoT, blockchain, and sustainable tech to
+              design products that address pressing challenges in developing
+              economies.
+            </p>
+            <p>
+              We publish research papers, mentor students, and collaborate with
+              industry experts to stay ahead of the curve.
+            </p>
+          </motion.div>
+
+          <motion.div className="info-card">
+            <h3>🤝 Collaboration</h3>
+            <p>
+              We believe collaboration is key to solving society’s biggest
+              problems. That’s why we bring together students, researchers,
+              startups, and organizations to work collectively.
+            </p>
+            <p>
+              Our open innovation model allows participants to share resources,
+              co-develop ideas, and scale impact beyond geographical boundaries.
+            </p>
+            <p>
+              Through hackathons, workshops, and global partnerships, we are
+              building a vibrant ecosystem of changemakers.
+            </p>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }

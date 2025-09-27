@@ -48,8 +48,9 @@ const Header = () => {
       <div className="nav-links">
         <motion.a href="/landingpage" whileHover={{ y: -2 }}>Home</motion.a>
         <motion.a href="/projectspage" whileHover={{ y: -2 }}>Projects</motion.a>
+        <motion.a href="/Blogspage" whileHover={{ y: -2 }}>Blogs</motion.a>
         <motion.a href="/AboutUs" whileHover={{ y: -2 }}>Team</motion.a>
-        {/* <motion.a href="/publications" whileHover={{ y: -2 }}>Publications</motion.a> */}
+         
 
         {isLoggedIn ? (
           <div className="profile-dropdown" style={{ position: "relative", display: "inline-block" }}>

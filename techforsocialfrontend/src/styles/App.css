@@ -14,7 +14,8 @@ body {
 }
 
 .App {
-  min-height: 100vh;
+  min-height: 200vh;
+  height: 1700px;
   background: linear-gradient(135deg, #064232 0%, #568F87 50%, #064232 100%);
   position: relative;
   overflow: hidden;
@@ -63,7 +64,7 @@ body {
 .logo-circle {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #568F87, #064232);
+  background: linear-gradient(135deg, #c1f4ed, #a0ffe6);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -467,4 +468,40 @@ body {
   .hero-section {
     min-height: calc(100vh - 140px);
   }
+}
+
+/* Cards Section */
+.cards-container {
+  display: flex;
+  flex-direction: column; /* stack one below another */
+  gap: 3rem; /* space between cards */
+  max-width: 1400px; /* narrower for readability */
+  margin: 0 auto;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3rem; /* increased padding for more spacious content */
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(6, 66, 50, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(12px);
+  text-align: left; /* makes long content easier to read */
+}
+
+.info-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(245, 186, 187, 0.3);
+}
+
+.info-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #f5babb;
+}
+
+.info-card p {
+  font-size: 1.2rem; /* slightly bigger text for readability */
+  line-height: 1.8;
+  color: rgba(255, 245, 242, 0.95);
 }
