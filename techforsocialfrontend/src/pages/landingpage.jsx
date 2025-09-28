@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Header from "../components/Header";
+import Footer from '../components/footer';
 import "../styles/App.css"; // ✅ This will use your updated green-pink theme CSS
 import { Link } from "react-router-dom";
+
 
 const TrueFocus = ({
   sentence = "TechForSocial",
@@ -193,62 +195,130 @@ function LandingPage() {
         </div>
       </main>
 
-      {/* Cards Section */}
-      <section className="cards-section">
-        <div className="cards-container">
-          <motion.div className="info-card">
-            <h3>🌍 Social Impact</h3>
-            <p>
-              Driving change through technology by solving real-world challenges
-              in healthcare, education, and sustainability.
-            </p>
-            <p>
-              Our initiatives include low-cost health monitoring devices,
-              AI-powered educational tools, and community-driven green
-              technologies that empower underprivileged sections of society.
-            </p>
-            <p>
-              By working closely with NGOs and government bodies, we ensure our
-              solutions are scalable and reach the people who need them most.
-            </p>
-          </motion.div>
+     {/* Cards Section */}
+<section className="cards-section">
+  <div className="cards-container">
 
-          <motion.div className="info-card">
-            <h3>💡 Innovation & Research</h3>
-            <p>
-              Combining cutting-edge research with practical innovations to
-              create solutions that drive measurable impact.
-            </p>
-            <p>
-              Our team works on AI, IoT, blockchain, and sustainable tech to
-              design products that address pressing challenges in developing
-              economies.
-            </p>
-            <p>
-              We publish research papers, mentor students, and collaborate with
-              industry experts to stay ahead of the curve.
-            </p>
-          </motion.div>
+    {/* Card 1 - What Our Website Does */}
+    <motion.div className="info-card card-what-we-do">
+      <h3>🚀 What Our Website Does</h3>
+      <p>
+        TechForSocial is a platform that bridges the gap between 
+        research, technology, and society. We create real-world solutions 
+        in healthcare, education, sustainability, and assistive technologies.
+      </p>
+      <p>
+        From IoT-based elderly monitoring, autism detection apps, 
+        and disease analysis to women empowerment projects — our 
+        platform is about <b>turning innovation into impact</b>.
+      </p>
+    </motion.div>
 
-          <motion.div className="info-card">
-            <h3>🤝 Collaboration</h3>
-            <p>
-              We believe collaboration is key to solving society’s biggest
-              problems. That’s why we bring together students, researchers,
-              startups, and organizations to work collectively.
-            </p>
-            <p>
-              Our open innovation model allows participants to share resources,
-              co-develop ideas, and scale impact beyond geographical boundaries.
-            </p>
-            <p>
-              Through hackathons, workshops, and global partnerships, we are
-              building a vibrant ecosystem of changemakers.
-            </p>
-          </motion.div>
+    {/* Card 2 - Our Missions/Goals with horizontal sub-cards */}
+    <motion.div className="info-card card-missions">
+      <h3>🎯 Our Missions & Goals</h3>
+      <div className="sub-cards">
+        <div className="sub-card">
+          <h4>🌍 Social Good</h4>
+          <p>
+            Use technology to solve pressing problems in healthcare, education, and sustainability.  
+            Every project is designed to improve lives and empower communities.
+          </p>
         </div>
-      </section>
+        <div className="sub-card">
+          <h4>💡 Innovation</h4>
+          <p>
+            Blend AI, IoT, and data science with social challenges for measurable, research-backed impact.  
+            From prototypes to scalable solutions, we focus on usability.
+          </p>
+        </div>
+        <div className="sub-card">
+          <h4>🤝 Collaboration</h4>
+          <p>
+            Connect students, researchers, NGOs, and industry partners to co-create 
+            impactful solutions that drive collective growth.
+          </p>
+        </div>
+        <div className="sub-card">
+          <h4>📈 Scalability</h4>
+          <p>
+            Ensure projects don’t just stay in labs — but scale to benefit 
+            entire communities, cities, and beyond.
+          </p>
+        </div>
+        <div className="sub-card">
+          <h4>📚 Knowledge Sharing</h4>
+          <p>
+            Publish research, conduct workshops, and provide open resources 
+            to spread awareness and build skills in tech-for-good.
+          </p>
+        </div>
+        <div className="sub-card">
+          <h4>🔗 Sustainability</h4>
+          <p>
+            Build long-term, eco-friendly, and financially sustainable 
+            solutions that continue to create impact over time.
+          </p>
+        </div>
+      </div>
+    </motion.div>
+
+    {/* Card 3 - What Users Say with horizontal sub-cards */}
+    <motion.div className="info-card card-users">
+     <h3>🗣️ What Users Say</h3>
+<div className="sub-cards">
+  <div className="sub-card">
+    <p>
+       “TechForSocial helped us build a low-cost autism detection tool 
+      that made a real difference in our NGO.”  
+    </p>
+    <span>- NGO Partner 🤝</span>
+  </div>
+  <div className="sub-card">
+    <p>
+       “Through workshops and hackathons, I gained hands-on experience 
+      in AI & IoT projects.”  
+    </p>
+    <span>- Student Innovator 🎓</span>
+  </div>
+  <div className="sub-card">
+    <p>
+      “Their research-backed solutions are not just concepts, but 
+      scalable real-world projects.”  
+    </p>
+    <span>- Research Collaborator 📊 </span>
+  </div>
+  <div className="sub-card">
+    <p>
+       “The mentorship and guidance I received gave me clarity on how 
+      to apply my skills to social problems.”  
+    </p>
+    <span>- Young Researcher 🌱</span>
+  </div>
+  <div className="sub-card">
+    <p>
+       “Their IoT-based health monitoring project has reduced 
+      emergency response times significantly.”  
+    </p>
+    <span>- Healthcare Professional 🏥</span>
+  </div>
+  <div className="sub-card">
+    <p>
+       “I found new collaborators and mentors who helped 
+      shape my startup idea into a real product.”  
+    </p>
+    <span>- Student Entrepreneur 🚀</span>
+  </div>
+</div>
+
+    </motion.div>
+
+  </div>
+</section>
+
+<Footer />  
     </div>
+    
   );
 }
 

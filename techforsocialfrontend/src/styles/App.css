@@ -15,10 +15,10 @@ body {
 
 .App {
   min-height: 200vh;
-  height: 1700px;
+  height: auto;
   background: linear-gradient(135deg, #064232 0%, #568F87 50%, #064232 100%);
   position: relative;
-  overflow: hidden;
+  
 }
 
 /* Technical Background Styles */
@@ -504,4 +504,48 @@ body {
   font-size: 1.2rem; /* slightly bigger text for readability */
   line-height: 1.8;
   color: rgba(255, 245, 242, 0.95);
+}
+
+/* Sub-cards inside 2nd card */
+.sub-cards {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap; /* allows wrapping on small screens */
+  justify-content: space-between;
+}
+
+.sub-card {
+  flex: 1 1 calc(33.33% - 2rem);
+  background: rgba(252, 215, 215, 0.773);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(6, 66, 50, 0.25);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.sub-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 28px rgba(245, 186, 187, 0.25);
+}
+
+.sub-card h4 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #330102;
+}
+
+.sub-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.637);
+}
+
+/* Responsive: stack sub-cards on smaller screens */
+@media (max-width: 900px) {
+  .sub-card {
+    flex: 1 1 100%;
+  }
 }
