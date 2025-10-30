@@ -9,15 +9,10 @@ const SignupPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'user', // Default to user
-    adminCode: '', // For admin verification
     agreeToTerms: false
   });
-  const [showAdminCode, setShowAdminCode] = useState(false);
-  const [errors, setErrors] = useState({});
 
-  // Admin verification code (in real app, this would be validated server-side)
-  const ADMIN_CODE = 'ADMIN2024';
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,7 +21,6 @@ const SignupPage = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
 
-    // Clear errors when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -35,65 +29,32 @@ const SignupPage = () => {
     }
   };
 
-  const handleRoleChange = (role) => {
-    setFormData(prev => ({
-      ...prev,
-      role: role,
-      adminCode: role === 'user' ? '' : prev.adminCode
-    }));
-    setShowAdminCode(role === 'admin');
-
-    // Clear admin code error if switching back to user
-    if (role === 'user' && errors.adminCode) {
-      setErrors(prev => ({
-        ...prev,
-        adminCode: ''
-      }));
-    }
-  };
-
   const validateForm = () => {
     const newErrors = {};
-
-    // Password validation
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-
-    // Admin code validation
-    if (formData.role === 'admin' && formData.adminCode !== ADMIN_CODE) {
-      newErrors.adminCode = 'Invalid admin verification code';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/register/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           first_name: formData.firstName,
           last_name: formData.lastName,
           email: formData.email,
           password: formData.password,
-          confirm_password: formData.confirmPassword,
-          role: formData.role,
-          adminCode: formData.adminCode,
+          confirm_password: formData.confirmPassword
         }),
       });
 
@@ -102,12 +63,7 @@ const SignupPage = () => {
       if (response.ok) {
         console.log("User registered:", data);
         sessionStorage.setItem("userData", JSON.stringify(data.user));
-
-        if (data.user.role === "admin") {
-          navigate("/dashboard");
-        } else {
-          navigate("/landingpage");
-        }
+        navigate("/login");
       } else {
         console.error("Registration failed:", data);
         setErrors(data);
@@ -132,12 +88,9 @@ const SignupPage = () => {
       width: '100%',
       maxWidth: '1000px',
       borderRadius: '24px',
-      height: '100%',
       overflow: 'hidden',
       boxShadow: '0 20px 60px rgba(6, 66, 50, 0.3)',
-      backdropFilter: 'blur(20px)',
       background: 'rgba(255, 255, 255, 1)',
-      border: '1px solid rgba(255, 245, 242, 0.2)',
     },
     leftPanel: {
       flex: '0.8',
@@ -183,57 +136,25 @@ const SignupPage = () => {
     rightPanel: {
       flex: '1.4',
       background: 'rgba(255, 245, 242, 0.95)',
-      backdropFilter: 'blur(10px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '2rem',
-      width: '1000px',
     },
     formContainer: {
       background: 'rgba(255, 255, 255, 0.9)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(86, 143, 135, 0.1)',
       borderRadius: '20px',
       padding: '2.5rem',
       width: '100%',
       maxWidth: '900px',
-      height: '100%',
       boxShadow: '0 8px 32px rgba(6, 66, 50, 0.1)',
-      overflow: 'auto'
     },
     title: {
       fontSize: '1.8rem',
       fontWeight: 'bold',
       color: '#065a34ff',
-      marginBottom: '0.5rem',
+      marginBottom: '1rem',
       textAlign: 'center'
-    },
-    roleSelector: {
-      display: 'flex',
-      gap: '1rem',
-      marginBottom: '1.5rem',
-      padding: '0.5rem',
-      background: 'rgba(255, 245, 242, 0.3)',
-      borderRadius: '12px'
-    },
-    roleOption: {
-      flex: 1,
-      padding: '0.75rem',
-      textAlign: 'center',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      fontWeight: '500'
-    },
-    roleOptionActive: {
-      background: 'linear-gradient(135deg, #F5BABB, #F5BABB)',
-      color: '#064232',
-      boxShadow: '0 2px 8px rgba(6, 66, 50, 0.2)'
-    },
-    roleOptionInactive: {
-      background: 'transparent',
-      color: '#065a34'
     },
     formContent: {
       display: 'flex',
@@ -261,43 +182,16 @@ const SignupPage = () => {
       outline: 'none',
       transition: 'all 0.3s ease'
     },
-    inputError: {
-      borderColor: '#dc2626'
-    },
-    errorMessage: {
-      color: '#dc2626',
-      fontSize: '0.8rem',
-      marginTop: '0.25rem'
-    },
-    adminCodeContainer: {
-      background: 'rgba(249, 250, 251, 0.8)',
-      border: '1px solid rgba(6, 90, 52, 0.2)',
-      borderRadius: '12px',
-      padding: '1rem',
-      marginTop: '0.5rem'
-    },
-    adminCodeNote: {
-      fontSize: '0.8rem',
-      color: '#065a34',
-      marginBottom: '0.5rem',
-      fontStyle: 'italic'
-    },
+    inputError: { borderColor: '#dc2626' },
+    errorMessage: { color: '#dc2626', fontSize: '0.8rem', marginTop: '0.25rem' },
     checkboxContainer: {
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
       margin: '0.5rem 0'
     },
-    checkbox: {
-      width: '18px',
-      height: '18px',
-      accentColor: '#096458ff'
-    },
-    checkboxLabel: {
-      color: 'rgba(15, 67, 7, 0.8)',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    },
+    checkbox: { width: '18px', height: '18px', accentColor: '#096458ff' },
+    checkboxLabel: { color: 'rgba(15, 67, 7, 0.8)', fontSize: '0.9rem' },
     button: {
       background: 'linear-gradient(135deg, #F5BABB, #F5BABB)',
       color: '#064232',
@@ -333,7 +227,7 @@ const SignupPage = () => {
           <div style={styles.decorativeShape}></div>
           <h1 style={styles.welcomeTitle}>Join us!</h1>
           <p style={styles.welcomeSubtitle}>
-            Create your account to get started. Choose between user or admin access.
+            Create your account to get started.
           </p>
         </div>
 
@@ -341,28 +235,6 @@ const SignupPage = () => {
         <div style={styles.rightPanel}>
           <div style={styles.formContainer}>
             <h2 style={styles.title}>Sign Up</h2>
-
-            {/* Role Selector */}
-            <div style={styles.roleSelector}>
-              <div
-                style={{
-                  ...styles.roleOption,
-                  ...(formData.role === 'user' ? styles.roleOptionActive : styles.roleOptionInactive)
-                }}
-                onClick={() => handleRoleChange('user')}
-              >
-                👤 User Account
-              </div>
-              <div
-                style={{
-                  ...styles.roleOption,
-                  ...(formData.role === 'admin' ? styles.roleOptionActive : styles.roleOptionInactive)
-                }}
-                onClick={() => handleRoleChange('admin')}
-              >
-                👑 Admin Account
-              </div>
-            </div>
 
             <form style={styles.formContent} onSubmit={handleSubmit}>
               <div style={{ display: 'flex', gap: '1rem' }}>
@@ -416,12 +288,10 @@ const SignupPage = () => {
                     ...styles.input,
                     ...(errors.password ? styles.inputError : {})
                   }}
-                  placeholder="Password (minimum 6 characters)"
+                  placeholder="Password (min 6 characters)"
                   required
                 />
-                {errors.password && (
-                  <div style={styles.errorMessage}>{errors.password}</div>
-                )}
+                {errors.password && <div style={styles.errorMessage}>{errors.password}</div>}
               </div>
 
               <div style={styles.inputGroup}>
@@ -435,40 +305,13 @@ const SignupPage = () => {
                     ...styles.input,
                     ...(errors.confirmPassword ? styles.inputError : {})
                   }}
-                  placeholder="Confirm Password"
+                  placeholder="Confirm password"
                   required
                 />
                 {errors.confirmPassword && (
                   <div style={styles.errorMessage}>{errors.confirmPassword}</div>
                 )}
               </div>
-
-              {/* Admin Code Field */}
-              {showAdminCode && (
-                <div style={styles.adminCodeContainer}>
-                  <div style={styles.adminCodeNote}>
-                    💡 Admin verification required. Enter the admin code to continue.
-                  </div>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Admin Verification Code</label>
-                    <input
-                      type="password"
-                      name="adminCode"
-                      value={formData.adminCode}
-                      onChange={handleInputChange}
-                      style={{
-                        ...styles.input,
-                        ...(errors.adminCode ? styles.inputError : {})
-                      }}
-                      placeholder="Enter admin verification code"
-                      required
-                    />
-                    {errors.adminCode && (
-                      <div style={styles.errorMessage}>{errors.adminCode}</div>
-                    )}
-                  </div>
-                </div>
-              )}
 
               <div style={styles.checkboxContainer}>
                 <input
@@ -485,7 +328,7 @@ const SignupPage = () => {
               </div>
 
               <button type="submit" style={styles.button}>
-                Create {formData.role === 'admin' ? 'Admin' : 'User'} Account
+                Create Account
               </button>
             </form>
 

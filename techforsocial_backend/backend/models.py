@@ -51,3 +51,16 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+class Blog(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    user = models.CharField(max_length=100, blank=True)
+    likes = models.IntegerField(default=0)
+    replies = models.JSONField(default=list, blank=True)
+    liked_by = models.JSONField(default=list, blank=True)  # store list of user ids who liked
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title

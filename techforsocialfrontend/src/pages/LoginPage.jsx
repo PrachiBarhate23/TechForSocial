@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-
 const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false,
-    userType: 'user' // 'user' or 'admin'
+    rememberMe: false
   });
 
   const handleInputChange = (e) => {
@@ -19,21 +17,12 @@ const LoginPage = () => {
     }));
   };
 
-  const handleUserTypeChange = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      userType: type
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -46,8 +35,6 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
-
-      // Save tokens + user info
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -75,7 +62,6 @@ const LoginPage = () => {
       width: '100%',
       maxWidth: '1000px',
       borderRadius: '24px',
-      height: '100%',
       overflow: 'hidden',
       boxShadow: '0 20px 60px rgba(6, 66, 50, 0.3)',
       backdropFilter: 'blur(20px)',
@@ -126,62 +112,30 @@ const LoginPage = () => {
     rightPanel: {
       flex: '1.4',
       background: 'rgba(255, 245, 242, 0.95)',
-      backdropFilter: 'blur(10px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '2rem',
-      width: '1000px',
     },
     formContainer: {
       background: 'rgba(255, 255, 255, 0.9)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(86, 143, 135, 0.1)',
       borderRadius: '20px',
       padding: '2.5rem',
       width: '100%',
       maxWidth: '900px',
-      height: '100%',
-      maxheight: '500px',
       boxShadow: '0 8px 32px rgba(6, 66, 50, 0.1)',
     },
     title: {
       fontSize: '1.8rem',
       fontWeight: 'bold',
       color: '#065a34ff',
-      marginBottom: '0.5rem',
-      textAlign: 'center'
-    },
-    userTypeSelector: {
-      display: 'flex',
-      gap: '1rem',
       marginBottom: '1.5rem',
-      justifyContent: 'center'
-    },
-    userTypeButton: {
-      padding: '0.75rem 2rem',
-      borderRadius: '25px',
-      border: '2px solid rgba(86, 143, 135, 0.3)',
-      background: 'rgba(255, 245, 242, 0.5)',
-      color: '#064232',
-      cursor: 'pointer',
-      fontSize: '1rem',
-      fontWeight: '500',
-      transition: 'all 0.3s ease',
-      flex: 1,
       textAlign: 'center'
-    },
-    userTypeButtonActive: {
-      background: 'linear-gradient(135deg, #F5BABB, #F5BABB)',
-      border: '2px solid #F5BABB',
-      color: '#064232',
-      fontWeight: '600'
     },
     formContent: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '1.5rem',
-      marginTop: '1.5rem'
+      gap: '1.5rem'
     },
     inputGroup: {
       display: 'flex',
@@ -200,8 +154,7 @@ const LoginPage = () => {
       background: 'rgba(255, 245, 242, 0.5)',
       color: '#0d6440ff',
       fontSize: '1rem',
-      outline: 'none',
-      transition: 'all 0.3s ease'
+      outline: 'none'
     },
     checkboxContainer: {
       display: 'flex',
@@ -218,11 +171,6 @@ const LoginPage = () => {
       width: '18px',
       height: '18px',
       accentColor: '#096458ff'
-    },
-    checkboxLabel: {
-      color: 'rgba(15, 67, 7, 0.8)',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
     },
     forgotPassword: {
       color: '#0a492bff',
@@ -242,15 +190,6 @@ const LoginPage = () => {
       transition: 'all 0.3s ease',
       marginTop: '1rem'
     },
-    credentialsHint: {
-      background: 'rgba(86, 143, 135, 0.1)',
-      border: '1px solid rgba(86, 143, 135, 0.2)',
-      borderRadius: '8px',
-      padding: '0.75rem',
-      fontSize: '0.85rem',
-      color: '#064232',
-      marginBottom: '1rem'
-    },
     divider: {
       display: 'flex',
       alignItems: 'center',
@@ -269,8 +208,7 @@ const LoginPage = () => {
     socialIcons: {
       display: 'flex',
       justifyContent: 'center',
-      gap: '1rem',
-      marginBottom: '1.5rem'
+      marginTop: '1rem'
     },
     socialIcon: {
       width: '45px',
@@ -281,8 +219,7 @@ const LoginPage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      cursor: 'pointer'
     },
     signupLink: {
       textAlign: 'center',
@@ -306,75 +243,24 @@ const LoginPage = () => {
     </svg>
   );
 
-  const FacebookIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  );
-
-  const LinkedInIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-
   return (
     <div style={styles.container}>
       <div style={styles.mainCard}>
-        {/* Left Panel - Welcome Section */}
         <div style={styles.leftPanel}>
-          <div style={styles.decorativeElements}>
-            + ○ ⋮⋮⋮
-          </div>
+          <div style={styles.decorativeElements}>+ ○ ⋮⋮⋮</div>
           <div style={styles.decorativeShape}></div>
-
           <div>
             <h1 style={styles.welcomeTitle}>Welcome back!</h1>
             <p style={styles.welcomeSubtitle}>
-              Sign in as {formData.userType === 'admin' ? 'Administrator' : 'User'} to access your account and manage your portfolio.
+              Sign in to access your account and manage your portfolio.
             </p>
           </div>
         </div>
 
-        {/* Right Panel - Login Form */}
         <div style={styles.rightPanel}>
           <div style={styles.formContainer}>
             <h2 style={styles.title}>Sign In</h2>
-
-            {/* User Type Selector */}
-            <div style={styles.userTypeSelector}>
-              <button
-                type="button"
-                style={{
-                  ...styles.userTypeButton,
-                  ...(formData.userType === 'user' ? styles.userTypeButtonActive : {})
-                }}
-                onClick={() => handleUserTypeChange('user')}
-              >
-                👤 User Login
-              </button>
-              <button
-                type="button"
-                style={{
-                  ...styles.userTypeButton,
-                  ...(formData.userType === 'admin' ? styles.userTypeButtonActive : {})
-                }}
-                onClick={() => handleUserTypeChange('admin')}
-              >
-                🛡️ Admin Login
-              </button>
-            </div>
-
-            {/* Credentials Hint */}
-            {formData.userType === 'admin' && (
-              <div style={styles.credentialsHint}>
-                <strong>Admin Demo Credentials:</strong><br />
-                Email: admin@example.com<br />
-                Password: admin123
-              </div>
-            )}
-
-            <div onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div style={styles.formContent}>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Email Address</label>
@@ -384,11 +270,10 @@ const LoginPage = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     style={styles.input}
-                    placeholder={formData.userType === 'admin' ? "admin@example.com" : "Enter your email"}
+                    placeholder="Enter your email"
                     required
                   />
                 </div>
-
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Password</label>
                   <input
@@ -397,11 +282,10 @@ const LoginPage = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     style={styles.input}
-                    placeholder={formData.userType === 'admin' ? "admin123" : "Enter your password"}
+                    placeholder="Enter your password"
                     required
                   />
                 </div>
-
                 <div style={styles.checkboxContainer}>
                   <div style={styles.checkboxGroup}>
                     <input
@@ -416,20 +300,11 @@ const LoginPage = () => {
                       Remember me
                     </label>
                   </div>
-                  <span style={styles.forgotPassword}>
-                    Forgot password?
-                  </span>
+                  <span style={styles.forgotPassword}>Forgot password?</span>
                 </div>
-
-                <button
-                  type="submit"
-                  style={styles.button}
-                  onClick={handleSubmit}
-                >
-                  Sign In as {formData.userType === 'admin' ? 'Admin' : 'User'}
-                </button>
+                <button type="submit" style={styles.button}>Sign In</button>
               </div>
-            </div>
+            </form>
 
             <div style={styles.divider}>
               <div style={styles.dividerLine}></div>
@@ -440,12 +315,6 @@ const LoginPage = () => {
             <div style={styles.socialIcons}>
               <div style={styles.socialIcon}>
                 <GoogleIcon />
-              </div>
-              <div style={styles.socialIcon}>
-                <FacebookIcon />
-              </div>
-              <div style={styles.socialIcon}>
-                <LinkedInIcon />
               </div>
             </div>
 
@@ -467,17 +336,10 @@ const LoginPage = () => {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-20px) rotate(5deg); }
         }
-        
-        .user-type-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(86, 143, 135, 0.2);
-        }
-        
         input:focus {
           border-color: #F5BABB !important;
           box-shadow: 0 0 0 3px rgba(245, 186, 187, 0.1) !important;
         }
-        
         button:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(245, 186, 187, 0.3);
@@ -486,4 +348,5 @@ const LoginPage = () => {
     </div>
   );
 };
+
 export default LoginPage;
