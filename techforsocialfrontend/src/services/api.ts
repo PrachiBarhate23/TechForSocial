@@ -9,6 +9,9 @@ const api = axios.create({
   },
 });
 
+const authHeader = (token?: string) =>
+  token ? { Authorization: `Bearer ${token}` } : {};
+
 export async function getProjects(params?: {
   category?: string;
   tag?: string;
@@ -33,25 +36,23 @@ export async function getBlog(id: number): Promise<any> {
   return res.data;
 }
 
-// Optional exports for creating/updating/deleting if needed later
+export async function likeBlog(blogId: number, token?: string) {
+  const res = await api.post(`/blogs/${blogId}/like/`, null, { headers: authHeader(token) });
+  return res.data;
+}
+
+export async function replyBlog(blogId: number, content: string, token?: string) {
+  const res = await api.post(`/blogs/${blogId}/reply/`, { content }, { headers: authHeader(token) });
+  return res.data;
+}
+
 export async function createBlog(payload: Record<string, any>, token?: string) {
   const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const res = await api.post("/blogs/", payload, { headers });
   return res.data;
 }
 
-export async function createProject(payload: Record<string, any>, token?: string) {
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
-  const res = await api.post("/projects/", payload, { headers });
-  return res.data;
-}
-export async function likeBlog(blogId: number, token?: string) {
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
-  const res = await api.post(`/blogs/${blogId}/like/`, null, { headers });
-  return res.data;
-}
-export async function replyBlog(blogId: number, content: string, token?: string) {
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
-  const res = await api.post(`/blogs/${blogId}/reply/`, { content }, { headers });
+export async function deleteReply(blogId: number, replyId: string | number, token?: string) {
+  const res = await api.delete(`/blogs/${blogId}/reply/${replyId}/`, { headers: authHeader(token) });
   return res.data;
 }

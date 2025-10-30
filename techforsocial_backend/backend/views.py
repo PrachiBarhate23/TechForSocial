@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions, filters
 from rest_framework_simplejwt.tokens import RefreshToken
-
+import time
 from .models import Project, Blog
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, ProjectSerializer, BlogSerializer
 
@@ -36,23 +36,22 @@ def register(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
+@permission_classes([AllowAny])
 def login(request):
     email = request.data.get('email')
     password = request.data.get('password')
-
     user = authenticate(request, email=email, password=password)
 
-    if user is not None:
-        serializer = UserSerializer(user)
-        return Response({
-            "message": "Login successful",
-            "user": serializer.data
-        }, status=status.HTTP_200_OK)
-    else:
-        return Response({
-            "error": "Invalid email or password"
-        }, status=status.HTTP_401_UNAUTHORIZED)
+    if user is None:
+        return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    refresh = RefreshToken.for_user(user)
+    return Response({
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+        "user": UserSerializer(user).data
+    }, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -96,23 +95,21 @@ class BlogViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        user = self.request.query_params.get("user")
-        if user:
-            queryset = queryset.filter(user=user)
-        return queryset
-
     @action(detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated])
     def like(self, request, pk=None):
         blog = self.get_object()
         user_id = request.user.id
         liked_by = blog.liked_by or []
         if user_id in liked_by:
-            return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-        liked_by.append(user_id)
-        blog.liked_by = liked_by
-        blog.likes = (blog.likes or 0) + 1
+            # unlike
+            liked_by = [uid for uid in liked_by if uid != user_id]
+            blog.liked_by = liked_by
+            blog.likes = max(0, (blog.likes or 1) - 1)
+        else:
+            # like
+            liked_by.append(user_id)
+            blog.liked_by = liked_by
+            blog.likes = (blog.likes or 0) + 1
         blog.save(update_fields=["liked_by", "likes"])
         serializer = self.get_serializer(blog, context={"request": request})
         return Response(serializer.data)
@@ -124,7 +121,7 @@ class BlogViewSet(viewsets.ModelViewSet):
         if not content:
             return Response({"detail": "content is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        username = getattr(request.user, "username", None) or str(request.user)
+        username = getattr(request.user, "first_name", None) or getattr(request.user, "username", None) or request.user.email
         replies = blog.replies or []
         reply_obj = {"id": int(time.time() * 1000), "content": content, "user": username}
         replies.append(reply_obj)
@@ -132,3 +129,21 @@ class BlogViewSet(viewsets.ModelViewSet):
         blog.save(update_fields=["replies"])
         serializer = self.get_serializer(blog, context={"request": request})
         return Response(serializer.data)
+
+    @action(detail=True, methods=["delete"], url_path=r"reply/(?P<reply_id>[^/.]+)", permission_classes=[permissions.IsAuthenticated])
+    def delete_reply(self, request, pk=None, reply_id=None):
+        blog = self.get_object()
+        replies = blog.replies or []
+        # find the reply
+        for r in replies:
+            if str(r.get("id")) == str(reply_id):
+                username = getattr(request.user, "first_name", None) or getattr(request.user, "username", None) or request.user.email
+                if r.get("user") != username:
+                    return Response({"detail": "Not allowed to delete this reply"}, status=status.HTTP_403_FORBIDDEN)
+                # remove reply
+                replies = [x for x in replies if str(x.get("id")) != str(reply_id)]
+                blog.replies = replies
+                blog.save(update_fields=["replies"])
+                serializer = self.get_serializer(blog, context={"request": request})
+                return Response(serializer.data)
+        return Response({"detail": "Reply not found"}, status=status.HTTP_404_NOT_FOUND)

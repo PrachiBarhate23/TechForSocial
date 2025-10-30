@@ -173,3 +173,26 @@ body, html {
   color: rgba(6,66,50,0.6);
   margin-top: 20px;
 }
+
+.delete-reply-btn {
+  background: linear-gradient(180deg,#ff6b6b,#e74c3c);
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  box-shadow: 0 2px 6px rgba(231,76,60,.28);
+}
+.delete-reply-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(231,76,60,.32);
+}
+.delete-reply-btn:active { transform: translateY(0); opacity: .95; }
+
+/* ensure like icon transition is smooth (if not already) */
+.like-btn svg, .post-actions svg {
+  transition: color .15s ease, transform .12s ease;
+}

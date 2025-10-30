@@ -18,34 +18,31 @@ const LoginPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+  e.preventDefault();
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/login/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: formData.email, password: formData.password }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Login failed");
-      }
-
-      const data = await response.json();
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      alert(`Login successful! Welcome ${data.user.first_name || data.user.email}`);
-      navigate("/landingpage");
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Invalid credentials. Please try again.");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Login failed");
     }
-  };
+
+    const data = await response.json();
+    localStorage.setItem("access", data.access);
+    localStorage.setItem("refresh", data.refresh);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    alert(`Welcome ${data.user.first_name || data.user.username || data.user.email}!`);
+    navigate("/landingpage");
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Invalid credentials. Please try again.");
+  }
+};
 
   const styles = {
     container: {

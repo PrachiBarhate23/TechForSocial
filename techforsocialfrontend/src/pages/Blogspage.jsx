@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/footer';
 import '../styles/BlogPage.css';
 import backgroundImage from '../assets/images/background.jpg';
-import { getBlogs, likeBlog, replyBlog } from '../services/api.ts';
+import { getBlogs, likeBlog, replyBlog, createBlog, deleteReply } from '../services/api.ts';
 
 const BlogPage = () => {
   const navigate = useNavigate();
@@ -34,6 +34,7 @@ const BlogPage = () => {
             likes: b.likes || 0,
             replies: b.replies || [],
             liked: !!b.liked,
+            liking: false, // UI loading flag per post
             showReplyBox: false,
             replyContent: '',
             user: b.user || 'Unknown',
@@ -52,27 +53,34 @@ const BlogPage = () => {
   };
 
   const addPost = async () => {
-    const { user } = getAuth();
-    const author = user?.username || user?.email || 'Anonymous';
+    const { user, token } = getAuth();
+    if (!token) {
+      if (window.confirm('You must be logged in to post. Go to login?')) navigate('/login');
+      return;
+    }
+    const author = user?.first_name || user?.username || user?.email || 'Anonymous';
     if (!newPost.title.trim() || !newPost.content.trim()) return;
-    const post = {
-      id: Date.now(),
-      title: newPost.title,
-      content: newPost.content,
-      likes: 0,
-      replies: [],
-      showReplyBox: false,
-      replyContent: '',
-      user: author,
-    };
-    setPosts(prev => [post, ...prev]);
-    setNewPost({ title: '', content: '' });
-    setShowNewPostForm(false);
-  };
 
-  const cancelPost = () => {
-    setNewPost({ title: '', content: '' });
-    setShowNewPostForm(false);
+    try {
+      const created = await createBlog({ title: newPost.title, content: newPost.content, user: author }, token);
+      setPosts(prev => [{ 
+        id: created.id,
+        title: created.title,
+        content: created.content,
+        likes: created.likes || 0,
+        replies: created.replies || [],
+        liked: !!created.liked,
+        liking: false,
+        showReplyBox: false,
+        replyContent: '',
+        user: created.user || author,
+      }, ...prev]);
+      setNewPost({ title: '', content: '' });
+      setShowNewPostForm(false);
+    } catch (err) {
+      console.error('Create post failed', err);
+      alert('Failed to create post');
+    }
   };
 
   const handleLike = async (id) => {
@@ -81,22 +89,37 @@ const BlogPage = () => {
       if (window.confirm('You must be logged in to like a post. Go to login?')) navigate('/login');
       return;
     }
+
+    // optimistic update: keep a copy to rollback if needed
+    const prevPosts = posts;
+    const prevPost = prevPosts.find(p => p.id === id);
+    if (!prevPost) return;
+
+    // apply optimistic UI change
+    setPosts(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      const liked = !p.liked;
+      const likes = liked ? p.likes + 1 : Math.max(0, p.likes - 1);
+      return { ...p, liked, likes, liking: true };
+    }));
+
     try {
-      const updated = await likeBlog(id, token);
+      const updated = await likeBlog(id, token); // backend toggles like/unlike
       setPosts(prev => prev.map(p => p.id === id ? {
         ...p,
         likes: updated.likes,
-        liked: true
+        liked: !!updated.liked,
+        liking: false
       } : p));
     } catch (err) {
+      // rollback to previous post state
+      setPosts(prev => prev.map(p => p.id === id ? { ...prevPost, liking: false } : p));
       if (err?.response?.status === 400) {
-        // already liked
-        setPosts(prev => prev.map(p => p.id === id ? { ...p, liked: true } : p));
         alert(err?.response?.data?.detail || 'You have already liked this post');
         return;
       }
       console.error('Like failed', err);
-      alert('Failed to like post');
+      alert('Failed to like/unlike post');
     }
   };
 
@@ -132,8 +155,37 @@ const BlogPage = () => {
     }
   };
 
+  const handleDeleteReply = async (blogId, replyId) => {
+    const { token } = getAuth();
+    if (!token) {
+      if (window.confirm('You must be logged in to delete a reply. Go to login?')) navigate('/login');
+      return;
+    }
+    try {
+      const updated = await deleteReply(blogId, replyId, token);
+      setPosts(prev => prev.map(p => p.id === blogId ? {
+        ...p,
+        replies: updated.replies || p.replies
+      } : p));
+    } catch (err) {
+      console.error('Delete reply failed', err);
+      alert(err?.response?.data?.detail || 'Failed to delete reply');
+    }
+  };
+
+  const cancelPost = () => {
+    setNewPost({ title: '', content: '' });
+    setShowNewPostForm(false);
+  };
+
   const cancelReply = (id) => {
     setPosts(prev => prev.map(p => p.id === id ? { ...p, replyContent: '', showReplyBox: false } : p));
+  };
+
+  // helper to get display name for current user
+  const currentUsername = () => {
+    const { user } = getAuth();
+    return user?.first_name || user?.username || user?.email || null;
   };
 
   return (
@@ -181,11 +233,16 @@ const BlogPage = () => {
               <button
                 className="like-btn"
                 onClick={() => handleLike(post.id)}
-                disabled={!!post.liked}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: post.liked ? 'default' : 'pointer' }}
+                disabled={post.liking}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  cursor: post.liking ? 'wait' : (post.liked ? 'default' : 'pointer')
+                }}
                 aria-pressed={!!post.liked}
               >
-                <Heart size={16} style={{ color: post.liked ? 'deeppink' : undefined }} />
+                <Heart size={16} style={{ color: (post.liked || post.liking) ? 'deeppink' : undefined, transition: 'color .15s' }} />
                 <span>{post.likes}</span>
               </button>
 
@@ -212,7 +269,18 @@ const BlogPage = () => {
             {post.replies && post.replies.length > 0 && (
               <div className="replies">
                 {post.replies.map(reply => (
-                  <p key={reply.id}><strong>{reply.user}:</strong> {reply.content}</p>
+                  <div key={reply.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <p style={{ margin: 0 }}><strong>{reply.user}:</strong> {reply.content}</p>
+                    {reply.user === currentUsername() && (
+                      <button
+                        onClick={() => handleDeleteReply(post.id, reply.id)}
+                        className="delete-reply-btn"
+                        title="Delete your reply"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -228,4 +296,4 @@ const BlogPage = () => {
   );
 };
 
-export default BlogPage;    
+export default BlogPage;
