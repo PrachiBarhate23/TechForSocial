@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import SplashCursor from './SplashCursor'; // adjust path as needed
+import SplashCursor from './SplashCursor'; 
+import Footer from '../components/footer';
 
 const TrueFocus = ({
   sentence = "TechForSocial",
@@ -140,10 +141,10 @@ function LandingPage() {
           </div>
         </div>
         <nav style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', alignItems: 'center' }}>
-          <a href="#home" style={{ color: '#525252', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}>Home</a>
-          <a href="#projects" style={{ color: '#525252', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}>Projects</a>
-          <a href="#blogs" style={{ color: '#525252', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}>Blogs</a>
-          <a href="#team" style={{ color: '#525252', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}>Team</a>
+          <motion.a href="/landingpage" whileHover={{ y: -2 }}>Home</motion.a>
+                 <motion.a href="/projectspage" whileHover={{ y: -2 }}>Projects</motion.a>
+                 <motion.a href="/Blogspage" whileHover={{ y: -2 }}>Blogs</motion.a>
+                 <motion.a href="/AboutUs" whileHover={{ y: -2 }}>Team</motion.a>
           <a href="#login" style={{
             padding: '0.5rem 1.25rem',
             backgroundColor: '#2563eb',
@@ -1512,178 +1513,10 @@ function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" style={{
-        backgroundColor: '#ffffff',
-        padding: '3rem 5% 2rem',
-        position: 'relative',
-        zIndex: 1,
-        borderTop: '1px solid #e5e5e5',
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-        }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '2.5rem',
-            marginBottom: '2.5rem',
-          }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '1.1rem',
-                }}>
-                  T4S
-                </div>
-                <h3 style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  color: '#1a1a1a',
-                }}>
-                  TechForSocial
-                </h3>
-              </div>
-              <p style={{
-                fontSize: '0.9rem',
-                color: '#737373',
-                lineHeight: 1.6,
-              }}>
-                Bridging technology and society for meaningful social impact through research-driven innovation.
-              </p>
-            </div>
-            <div>
-              <h4 style={{
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-              }}>
-                Quick Links
-              </h4>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.6rem',
-              }}>
-                {['Home', 'Projects', 'Blogs', 'Team', 'Research', 'Publications'].map((link) => (
-                  <a
-                    key={link}
-                    href="#"
-                    style={{
-                      fontSize: '0.9rem',
-                      color: '#737373',
-                      textDecoration: 'none',
-                      transition: 'color 0.2s',
-                    }}
-                  >
-                    {link}
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 style={{
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-              }}>
-                Get Involved
-              </h4>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.6rem',
-              }}>
-                {['Internships', 'Collaborate', 'Volunteer', 'Partner', 'Donate', 'Workshops'].map((link) => (
-                  <a
-                    key={link}
-                    href="#"
-                    style={{
-                      fontSize: '0.9rem',
-                      color: '#737373',
-                      textDecoration: 'none',
-                      transition: 'color 0.2s',
-                    }}
-                  >
-                    {link}
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 style={{
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-              }}>
-                Connect With Us
-              </h4>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
-              }}>
-                <div style={{
-                  fontSize: '0.9rem',
-                  color: '#737373',
-                  lineHeight: 1.6,
-                }}>
-                  <strong style={{ color: '#525252' }}>SPIT Mumbai</strong><br />
-                  Sardar Patel Institute of Technology<br />
-                  Mumbai, India
-                </div>
-                <a
-                  href="https://autobuddys.in"
-                  style={{
-                    fontSize: '0.9rem',
-                    color: '#2563eb',
-                    textDecoration: 'none',
-                  }}
-                >
-                  autobuddys.in
-                </a>
-              </div>
-            </div>
-          </div>
-          <div style={{
-            borderTop: '1px solid #e5e5e5',
-            paddingTop: '1.75rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}>
-            <p style={{
-              color: '#737373',
-              fontSize: '0.9rem',
-            }}>
-              © 2025 TechForSocial. All rights reserved.
-            </p>
-            <div style={{
-              display: 'flex',
-              gap: '1.5rem',
-            }}>
-              <a href="#" style={{ color: '#737373', textDecoration: 'none', fontSize: '0.9rem' }}>Privacy Policy</a>
-              <a href="#" style={{ color: '#737373', textDecoration: 'none', fontSize: '0.9rem' }}>Terms of Service</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+       {/* Footer Component */}
+      <Footer />
     </div>
   );
 }
-
+  
 export default LandingPage;

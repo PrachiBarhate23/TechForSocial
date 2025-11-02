@@ -1,142 +1,263 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ExternalLink, Code, Brain, Car, Bug, Hand, Gamepad2, MessageSquare, Users, Heart, Calendar, MapPin, Plus, Edit, Trash2, X, Save } from 'lucide-react';
-import backgroundImage from '../assets/images/background.jpg';
-// Mock Header and Footer components (you'll replace these with your actual components)
-// import autobuddysImg from '../assets/images/autobuddys.png';
-// import autismStudyImg from '../assets/images/autism-study.png';
-// import trackOnParkImg from '../assets/images/track-on-park.png';
-// import mosquitoImg from '../assets/images/mosquito.png';
-// import skinImg from '../assets/images/skin.png';
-// import signLangImg from '../assets/images/sign-language.png';
-// import quizImg from '../assets/images/quiz.png';
-// import tarangImg from '../assets/images/tarang.png';
-// import clixImg from '../assets/images/clix.png';
-// import elderlyImg from '../assets/images/elderly.png';
-// import physiotherapyImg from '../assets/images/physiotherapy.png';
-// import emotionImg from '../assets/images/quiz.png';
-// import autismGameImg from '../assets/images/quiz.png';
-
+import { motion } from 'framer-motion';
+import { Search, ExternalLink, X, Save, Plus, Edit, Trash2, Award, Users, Calendar, TrendingUp } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/footer';
 
-const API_URL = "http://127.0.0.1:8000/api/projects/";
+// Mock background - replace with your actual image
+const backgroundPattern = `data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232563eb' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E`;
 
-// Project Details Modal Component
+// Sample projects data
+const sampleProjects = [
+  {
+    id: 1,
+    title: 'AutoBuddys',
+    description: 'AI-powered mobile application providing therapeutic activities, progress tracking, and personalized learning modules for children with autism spectrum disorder. Includes caregiver dashboards, behavioral analysis, and communication tools to support developmental milestones.',
+    teamName: 'Autism Care Team',
+    websiteLink: 'https://autobuddys.in',
+    tags: ['Mobile App', 'AI', 'Healthcare', 'Machine Learning'],
+    category: 'Mobile App',
+    publications: [
+      'AutoBuddys: An AI-Based Therapeutic Mobile Application for Children with Autism Spectrum Disorder - IEEE Conference 2023',
+      'Behavioral Pattern Recognition in Autism Care Using Deep Learning - Journal of Medical AI 2024'
+    ],
+    image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop',
+    stats: { users: '500+', impact: 'High', year: '2023' }
+  },
+  {
+    id: 2,
+    title: 'IoT Elderly Monitoring System',
+    description: 'Real-time health monitoring system using IoT sensors for elderly care. Tracks vital signs, detects falls, monitors medication adherence, and provides emergency alerts to caregivers and medical professionals. Includes predictive analytics for health deterioration.',
+    teamName: 'Senior Care Innovation Lab',
+    websiteLink: 'https://eldercare.techforsocial.com',
+    tags: ['IoT', 'Healthcare', 'Emergency Response', 'Sensors'],
+    category: 'IoT',
+    publications: [
+      'IoT-Based Fall Detection and Health Monitoring for Elderly Care - International Journal of IoT 2023',
+      'Predictive Analytics in Elderly Healthcare Systems - Smart Health Conference 2024'
+    ],
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=400&fit=crop',
+    stats: { users: '200+', impact: 'Critical', year: '2023' }
+  },
+  {
+    id: 3,
+    title: 'DermaLens',
+    description: 'AI-powered skin disease detection system that predicts 30+ conditions using deep learning and computer vision. Connects patients with dermatologists through integrated telemedicine platform for remote consultations and treatment planning.',
+    teamName: 'Medical AI Research Group',
+    websiteLink: 'https://dermalens.techforsocial.com',
+    tags: ['AI', 'Telemedicine', 'Computer Vision', 'Deep Learning'],
+    category: 'Machine Learning',
+    publications: [
+      'Deep Learning Approaches for Skin Disease Classification - Medical Imaging Journal 2023',
+      'Telemedicine Integration in AI-Powered Dermatology - Healthcare Technology Review 2024'
+    ],
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=400&fit=crop',
+    stats: { users: '1000+', impact: 'High', year: '2023' }
+  },
+  {
+    id: 4,
+    title: 'Women Empowerment Platform',
+    description: 'Digital platform providing skill development courses, entrepreneurship mentorship, financial literacy training, and networking opportunities. Includes job matching, micro-lending connections, safety features, and community support systems.',
+    teamName: 'Social Impact Development Team',
+    websiteLink: 'https://empower.techforsocial.com',
+    tags: ['Web App', 'Education', 'Empowerment', 'Social Impact'],
+    category: 'Web App',
+    publications: [
+      'Digital Platforms for Women Entrepreneurship Development - Social Innovation Journal 2024',
+      'Technology-Enabled Financial Literacy Programs - Economic Empowerment Review 2023'
+    ],
+    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop',
+    stats: { users: '300+', impact: 'High', year: '2024' }
+  },
+  {
+    id: 5,
+    title: 'Smart Education Analytics',
+    description: 'Data-driven learning management system with AI-powered personalized recommendations, student performance analytics, engagement tracking, and adaptive learning paths. Helps educators identify at-risk students early and provide targeted interventions.',
+    teamName: 'EdTech Innovation Lab',
+    websiteLink: 'https://eduanalytics.techforsocial.com',
+    tags: ['EdTech', 'Analytics', 'AI', 'Machine Learning'],
+    category: 'Machine Learning',
+    publications: [
+      'Predictive Analytics in Student Performance Management - Educational Technology Journal 2023',
+      'AI-Driven Personalized Learning Systems - Learning Sciences Conference 2024'
+    ],
+    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400&h=400&fit=crop',
+    stats: { users: '20+ schools', impact: 'High', year: '2023' }
+  },
+  {
+    id: 6,
+    title: 'Community Health Tracker',
+    description: 'Mobile health platform for rural communities enabling disease surveillance, vaccination tracking, maternal health monitoring, and health education. Works offline with periodic data synchronization for areas with limited connectivity.',
+    teamName: 'Rural Healthcare Initiative',
+    websiteLink: 'https://healthtracker.techforsocial.com',
+    tags: ['Mobile', 'Public Health', 'Rural', 'Healthcare'],
+    category: 'Mobile App',
+    publications: [
+      'Mobile Health Solutions for Rural Communities - Global Health Technology 2023',
+      'Offline-First Healthcare Applications - mHealth Journal 2024'
+    ],
+    image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?w=400&h=400&fit=crop',
+    stats: { users: '50+ villages', impact: 'Critical', year: '2023' }
+  }
+];
+
+// Notification Component
+const Notification = ({ message, type, isVisible, onClose }) => {
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(onClose, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
+
+  if (!isVisible) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -50 }}
+      style={{
+        position: 'fixed',
+        top: '2rem',
+        right: '2rem',
+        padding: '1rem 1.5rem',
+        borderRadius: '12px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+        zIndex: 1001,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        backgroundColor: type === 'success' ? '#10b981' : '#ef4444',
+        color: 'white',
+        fontSize: '0.95rem',
+        fontWeight: '500',
+        backdropFilter: 'blur(10px)'
+      }}
+    >
+      {message}
+      <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0' }}>
+        <X size={18} />
+      </button>
+    </motion.div>
+  );
+};
+
+// Project Details Modal
 const ProjectDetailsModal = ({ isOpen, onClose, project, userRole, onEdit, onDelete }) => {
   if (!isOpen || !project) return null;
 
-  const modalStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-    padding: '1rem'
-  };
-
-  const modalContentStyle = {
-    backgroundColor: 'rgba(255, 245, 242, 0.98)',
-    borderRadius: '20px',
-    padding: '2rem',
-    width: '100%',
-    maxWidth: '800px',
-    maxHeight: '90vh',
-    overflowY: 'auto',
-    boxShadow: '0 20px 60px rgba(6, 66, 50, 0.3)',
-    backdropFilter: 'blur(20px)',
-    border: '1px solid rgba(245, 186, 187, 0.3)',
-    position: 'relative'
-  };
-
-  const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '1.5rem',
-    borderBottom: '2px solid rgba(245, 186, 187, 0.3)',
-    paddingBottom: '1rem'
-  };
-
-  const titleStyle = {
-    fontSize: '2rem',
-    fontWeight: '700',
-    color: '#064232',
-    margin: 0
-  };
-
-  const sectionStyle = {
-    marginBottom: '1.5rem'
-  };
-
-  const sectionTitleStyle = {
-    fontSize: '1.2rem',
-    fontWeight: '600',
-    color: '#064232',
-    marginBottom: '0.5rem',
-    borderLeft: '4px solid #F5BABB',
-    paddingLeft: '1rem'
-  };
-
-  const contentStyle = {
-    fontSize: '1rem',
-    lineHeight: '1.6',
-    color: 'rgba(6, 66, 50, 0.8)',
-    marginBottom: '1rem'
-  };
-
   return (
-    <div style={modalStyle}>
-      <div style={modalContentStyle}>
-        {/* Header with title and close button */}
-        <div style={headerStyle}>
-          <h2 style={titleStyle}>{project.title}</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '1rem',
+        backdropFilter: 'blur(8px)'
+      }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '20px',
+          padding: '2.5rem',
+          width: '100%',
+          maxWidth: '900px',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          border: '1px solid rgba(226, 232, 240, 0.8)'
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '0.5rem', lineHeight: '1.2' }}>
+              {project.title}
+            </h2>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ 
+                padding: '0.4rem 1rem', 
+                backgroundColor: '#2563eb', 
+                color: 'white', 
+                borderRadius: '20px', 
+                fontSize: '0.85rem',
+                fontWeight: '600'
+              }}>
+                {project.category}
+              </span>
+              {project.stats && (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.9rem' }}>
+                    <Users size={16} />
+                    <span>{project.stats.users}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.9rem' }}>
+                    <Calendar size={16} />
+                    <span>{project.stats.year}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10b981', fontSize: '0.9rem', fontWeight: '600' }}>
+                    <TrendingUp size={16} />
+                    <span>{project.stats.impact} Impact</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
             {userRole === 'admin' && (
               <>
                 <button
-                  onClick={() => {
-                    onEdit(project);
-                    onClose();
-                  }}
+                  onClick={() => { onEdit(project); onClose(); }}
                   style={{
-                    background: 'rgba(86, 143, 135, 0.9)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '0.5rem 1rem',
-                    cursor: 'pointer',
+                    padding: '0.6rem 1rem',
+                    backgroundColor: '#2563eb',
                     color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
                     fontSize: '0.9rem',
-                    fontWeight: '500'
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
                   }}
                 >
                   <Edit size={16} />
                   Edit
                 </button>
                 <button
-                  onClick={() => {
-                    onDelete(project.id);
-                    onClose();
-                  }}
+                  onClick={() => { onDelete(project.id); onClose(); }}
                   style={{
-                    background: 'rgba(239, 68, 68, 0.9)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '0.5rem 1rem',
-                    cursor: 'pointer',
+                    padding: '0.6rem 1rem',
+                    backgroundColor: '#ef4444',
                     color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
                     fontSize: '0.9rem',
-                    fontWeight: '500'
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
                   }}
                 >
                   <Trash2 size={16} />
@@ -144,85 +265,96 @@ const ProjectDetailsModal = ({ isOpen, onClose, project, userRole, onEdit, onDel
                 </button>
               </>
             )}
-            <button
-              onClick={onClose}
-              style={{
-                background: 'rgba(245, 186, 187, 0.8)',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '0.5rem',
-                cursor: 'pointer',
-                color: '#064232'
-              }}
-            >
+            <button onClick={onClose} style={{ padding: '0.6rem', backgroundColor: '#f1f5f9', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#475569' }}>
               <X size={20} />
             </button>
           </div>
         </div>
 
         {/* Project Image */}
-        <div style={sectionStyle}>
+        <div style={{ marginBottom: '2rem' }}>
           <div style={{
-            width: '150px',
-            height: '150px',
-            borderRadius: '20px',
+            width: '100%',
+            height: '300px',
+            borderRadius: '16px',
             overflow: 'hidden',
-            margin: '0 auto 1rem',
-            boxShadow: '0 8px 25px rgba(6, 66, 50, 0.15)',
-            border: '3px solid rgba(245, 186, 187, 0.4)'
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
           }}>
-            <img 
-              src={project.image} 
-              alt={project.title} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-            />
+            <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         </div>
 
         {/* Description */}
-        <div style={sectionStyle}>
-          <h3 style={sectionTitleStyle}>Description</h3>
-          <p style={contentStyle}>{project.description}</p>
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1a1a1a', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ width: '4px', height: '24px', backgroundColor: '#2563eb', borderRadius: '2px' }} />
+            About the Project
+          </h3>
+          <p style={{ fontSize: '1rem', lineHeight: '1.8', color: '#475569' }}>
+            {project.description}
+          </p>
         </div>
 
-        {/* Team Information */}
-        {project.teamName && (
-          <div style={sectionStyle}>
-            <h3 style={sectionTitleStyle}>Team</h3>
-            <p style={contentStyle}>{project.teamName}</p>
-          </div>
-        )}
-
-        {/* Category */}
-        <div style={sectionStyle}>
-          <h3 style={sectionTitleStyle}>Category</h3>
-          <span style={{
-            backgroundColor: 'rgba(86, 143, 135, 0.8)',
-            color: 'white',
-            padding: '0.5rem 1rem',
-            borderRadius: '20px',
-            fontSize: '0.9rem',
-            fontWeight: '500'
-          }}>
-            {project.category}
-          </span>
+        {/* Team & Website */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+          {project.teamName && (
+            <div style={{ backgroundColor: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Team
+              </div>
+              <div style={{ fontSize: '1rem', color: '#1a1a1a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Users size={18} color="#2563eb" />
+                {project.teamName}
+              </div>
+            </div>
+          )}
+          {project.websiteLink && (
+            <div style={{ backgroundColor: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Website
+              </div>
+              <a
+                href={project.websiteLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '1rem',
+                  color: '#2563eb',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s'
+                }}
+              >
+                <ExternalLink size={18} />
+                Visit Project
+              </a>
+            </div>
+          )}
         </div>
 
-        {/* Technologies/Tags */}
+        {/* Technologies */}
         {project.tags && project.tags.length > 0 && (
-          <div style={sectionStyle}>
-            <h3 style={sectionTitleStyle}>Technologies</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1a1a1a', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: '4px', height: '24px', backgroundColor: '#2563eb', borderRadius: '2px' }} />
+              Technologies Used
+            </h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
               {project.tags.map((tag, index) => (
                 <span
                   key={index}
                   style={{
-                    backgroundColor: 'rgba(49, 108, 100, 0.8)',
-                    color: 'white',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '15px',
-                    fontSize: '0.85rem',
-                    fontWeight: '500'
+                    padding: '0.6rem 1.25rem',
+                    backgroundColor: '#eff6ff',
+                    color: '#1e40af',
+                    borderRadius: '10px',
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    border: '1px solid #bfdbfe'
                   }}
                 >
                   {tag}
@@ -232,65 +364,42 @@ const ProjectDetailsModal = ({ isOpen, onClose, project, userRole, onEdit, onDel
           </div>
         )}
 
-        {/* Website Link */}
-        {project.websiteLink && (
-          <div style={sectionStyle}>
-            <h3 style={sectionTitleStyle}>Website</h3>
-            <a
-              href={project.websiteLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: '#568F87',
-                textDecoration: 'none',
-                fontSize: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontWeight: '500'
-              }}
-            >
-              <ExternalLink size={16} />
-              {project.websiteLink}
-            </a>
-          </div>
-        )}
-
         {/* Publications */}
         {project.publications && project.publications.length > 0 && (
-          <div style={sectionStyle}>
-            <h3 style={sectionTitleStyle}>Publications ({project.publications.length})</h3>
+          <div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1a1a1a', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: '4px', height: '24px', backgroundColor: '#2563eb', borderRadius: '2px' }} />
+              Publications ({project.publications.length})
+            </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {project.publications.map((publication, index) => (
                 <div
                   key={index}
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: '1rem',
-                    borderRadius: '10px',
-                    border: '1px solid rgba(86, 143, 135, 0.2)',
-                    boxShadow: '0 2px 8px rgba(6, 66, 50, 0.1)'
+                    backgroundColor: '#f8fafc',
+                    padding: '1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                    borderLeft: '4px solid #2563eb'
                   }}
                 >
-                  <p style={{
-                    margin: 0,
-                    fontSize: '0.95rem',
-                    lineHeight: '1.5',
-                    color: '#064232'
-                  }}>
-                    {publication}
-                  </p>
+                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                    <Award size={20} color="#2563eb" style={{ flexShrink: 0, marginTop: '0.15rem' }} />
+                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.6', color: '#334155' }}>
+                      {publication}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
-// Project Form Modal Component (for Add/Edit)
+// Project Form Modal
 const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -330,44 +439,29 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const addTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, newTag.trim()]
-      }));
+      setFormData(prev => ({ ...prev, tags: [...prev.tags, newTag.trim()] }));
       setNewTag('');
     }
   };
 
   const removeTag = (tagToRemove) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
+    setFormData(prev => ({ ...prev, tags: prev.tags.filter(tag => tag !== tagToRemove) }));
   };
 
   const addPublication = () => {
     if (newPublication.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        publications: [...prev.publications, newPublication.trim()]
-      }));
+      setFormData(prev => ({ ...prev, publications: [...prev.publications, newPublication.trim()] }));
       setNewPublication('');
     }
   };
 
   const removePublication = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      publications: prev.publications.filter((_, i) => i !== index)
-    }));
+    setFormData(prev => ({ ...prev, publications: prev.publications.filter((_, i) => i !== index) }));
   };
 
   const handleSubmit = (e) => {
@@ -377,91 +471,68 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
 
   if (!isOpen) return null;
 
-  const modalStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-    padding: '1rem'
-  };
-
-  const modalContentStyle = {
-    backgroundColor: 'rgba(255, 245, 242, 0.98)',
-    borderRadius: '20px',
-    padding: '2rem',
-    width: '100%',
-    maxWidth: '600px',
-    maxHeight: '90vh',
-    overflowY: 'auto',
-    boxShadow: '0 20px 60px rgba(6, 66, 50, 0.3)',
-    backdropFilter: 'blur(20px)',
-    border: '1px solid rgba(245, 186, 187, 0.3)'
-  };
-
   const inputStyle = {
     width: '100%',
-    padding: '0.75rem',
-    borderRadius: '10px',
-    border: '1px solid rgba(86, 143, 135, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    color: '#064232',
-    fontSize: '1rem',
+    padding: '0.875rem',
+    borderRadius: '12px',
+    border: '1px solid #e5e7eb',
+    backgroundColor: '#ffffff',
+    color: '#1a1a1a',
+    fontSize: '0.95rem',
     outline: 'none',
-    marginBottom: '1rem'
-  };
-
-  const buttonStyle = {
-    padding: '0.75rem 1.5rem',
-    borderRadius: '10px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    fontWeight: '600',
-    transition: 'all 0.3s ease'
-  };
-
-  const primaryButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#568F87',
-    color: 'white'
-  };
-
-  const secondaryButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: 'rgba(245, 186, 187, 0.8)',
-    color: '#064232'
+    transition: 'all 0.2s',
+    fontFamily: 'inherit'
   };
 
   return (
-    <div style={modalStyle}>
-      <div style={modalContentStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#064232', margin: 0 }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '1rem',
+        backdropFilter: 'blur(8px)'
+      }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '20px',
+          padding: '2.5rem',
+          width: '100%',
+          maxWidth: '700px',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '700', color: '#1a1a1a', margin: 0 }}>
             {isEditing ? 'Edit Project' : 'Add New Project'}
           </h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#064232',
-              padding: '0.5rem'
-            }}
-          >
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '0.5rem' }}>
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
               Project Title *
             </label>
             <input
@@ -475,23 +546,23 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
             />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
               Description *
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }}
+              style={{ ...inputStyle, minHeight: '120px', resize: 'vertical' }}
               required
-              placeholder="Enter project description"
+              placeholder="Describe your project in detail"
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
                 Team Name
               </label>
               <input
@@ -500,13 +571,13 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
                 value={formData.teamName}
                 onChange={handleInputChange}
                 style={inputStyle}
-                placeholder="Enter team name"
+                placeholder="Your team name"
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
-                Category
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
+                Category *
               </label>
               <select
                 name="category"
@@ -525,8 +596,8 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
             </div>
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
               Website Link
             </label>
             <input
@@ -539,23 +610,33 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
             />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
-              Tags
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
+              Technologies / Tags
             </label>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
               <input
                 type="text"
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
-                style={{ ...inputStyle, marginBottom: 0, flex: 1 }}
-                placeholder="Add a tag"
+                style={{ ...inputStyle, flex: 1 }}
+                placeholder="Add a technology"
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
               />
               <button
                 type="button"
                 onClick={addTag}
-                style={secondaryButtonStyle}
+                style={{
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: '#f1f5f9',
+                  color: '#1a1a1a',
+                  border: 'none',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  transition: 'all 0.2s'
+                }}
               >
                 Add
               </button>
@@ -565,31 +646,25 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
                 <span
                   key={index}
                   style={{
-                    backgroundColor: 'rgba(86, 143, 135, 0.8)',
-                    color: 'white',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '15px',
+                    backgroundColor: '#eff6ff',
+                    color: '#1e40af',
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '8px',
                     fontSize: '0.85rem',
+                    fontWeight: '500',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.25rem'
+                    gap: '0.5rem',
+                    border: '1px solid #bfdbfe'
                   }}
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'white',
-                      cursor: 'pointer',
-                      padding: '0',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
+                    style={{ background: 'none', border: 'none', color: '#1e40af', cursor: 'pointer', padding: '0', display: 'flex' }}
                   >
-                    <X size={12} />
+                    <X size={14} />
                   </button>
                 </span>
               ))}
@@ -597,21 +672,31 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
           </div>
 
           <div style={{ marginBottom: '2rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#064232', fontWeight: '500' }}>
-              Publications
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#1a1a1a', fontWeight: '600', fontSize: '0.9rem' }}>
+              Publications & Research Papers
             </label>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
               <input
                 type="text"
                 value={newPublication}
                 onChange={(e) => setNewPublication(e.target.value)}
-                style={{ ...inputStyle, marginBottom: 0, flex: 1 }}
+                style={{ ...inputStyle, flex: 1 }}
                 placeholder="Add publication citation"
               />
               <button
                 type="button"
                 onClick={addPublication}
-                style={secondaryButtonStyle}
+                style={{
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: '#f1f5f9',
+                  color: '#1a1a1a',
+                  border: 'none',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  transition: 'all 0.2s'
+                }}
               >
                 Add
               </button>
@@ -621,29 +706,23 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
                 <div
                   key={index}
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(86, 143, 135, 0.2)',
+                    backgroundColor: '#f8fafc',
+                    padding: '0.875rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
-                    gap: '0.5rem'
+                    gap: '0.75rem'
                   }}
                 >
-                  <span style={{ fontSize: '0.9rem', color: '#064232', lineHeight: '1.4', flex: 1 }}>
+                  <span style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.5', flex: 1 }}>
                     {publication}
                   </span>
                   <button
                     type="button"
                     onClick={() => removePublication(index)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#064232',
-                      cursor: 'pointer',
-                      padding: '0.25rem'
-                    }}
+                    style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '0.25rem' }}
                   >
                     <X size={16} />
                   </button>
@@ -656,199 +735,258 @@ const ProjectFormModal = ({ isOpen, onClose, project, onSave, isEditing }) => {
             <button
               type="button"
               onClick={onClose}
-              style={secondaryButtonStyle}
+              style={{
+                padding: '0.875rem 1.75rem',
+                backgroundColor: '#f1f5f9',
+                color: '#1a1a1a',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                fontSize: '0.95rem',
+                transition: 'all 0.2s'
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={primaryButtonStyle}
+              style={{
+                padding: '0.875rem 1.75rem',
+                backgroundColor: '#2563eb',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                fontSize: '0.95rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+              }}
             >
-              <Save size={16} style={{ marginRight: '0.5rem' }} />
+              <Save size={18} />
               {isEditing ? 'Update Project' : 'Create Project'}
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
-// Notification Component
-const Notification = ({ message, type, isVisible, onClose }) => {
-  useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible, onClose]);
-
-  if (!isVisible) return null;
-
-  const notificationStyle = {
-    position: 'fixed',
-    top: '2rem',
-    right: '2rem',
-    padding: '1rem 1.5rem',
-    borderRadius: '10px',
-    boxShadow: '0 4px 15px rgba(6, 66, 50, 0.2)',
-    zIndex: 1001,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    backgroundColor: type === 'success' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)',
-    color: 'white',
-    fontSize: '0.9rem',
-    fontWeight: '500'
-  };
-
-  return (
-    <div style={notificationStyle}>
-      {message}
-      <button
-        onClick={onClose}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: 'white',
-          cursor: 'pointer',
-          padding: '0'
-        }}
-      >
-        <X size={16} />
-      </button>
-    </div>
-  );
-};
-
-// Simple Project Card Component - Only name and image
+// Enhanced Project Card
 const ProjectCard = ({ project, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const cardStyle = {
-    backgroundColor: 'rgba(251, 210, 212, 0.61)',
-    borderRadius: '20px',
-    padding: '20px',
-    boxShadow: '0 2px 8px rgba(6, 66, 50, 0.08)',
-    border: '1px solid rgba(245, 186, 187, 0.4)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    height: '280px',
-    transition: 'all 0.3s ease',
-    cursor: 'pointer',
-    backdropFilter: 'blur(10px)'
-  };
-
-  const cardHoverStyle = {
-    ...cardStyle,
-    backgroundColor: 'rgba(245, 186, 187, 0.5)',
-    boxShadow: '0 8px 25px rgba(6, 66, 50, 0.15)',
-    transform: 'translateY(-5px)',
-    border: '1px solid rgba(245, 186, 187, 0.6)'
-  };
-
   return (
-    <div 
-      style={isHovered ? cardHoverStyle : cardStyle}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.3 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onClick(project)}
-    >
-      {/* Image Container */}
-      <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        width: '120px',
-        height: '120px',
+      style={{
+        backgroundColor: '#ffffff',
         borderRadius: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '20px',
-        border: '2px solid rgba(86, 143, 135, 0.2)',
-        boxShadow: '0 2px 8px rgba(6, 66, 50, 0.1)',
-        overflow: 'hidden'
-      }}>
-        <img 
-          src={project.image} 
-          alt={project.title} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-        />
-      </div>
-      
-      <h3 style={{
-        fontSize: '24px',
-        fontWeight: '600',
-        marginBottom: '0',
-        color: '#064232',
-        lineHeight: '1.3',
-        textAlign: 'center',
         overflow: 'hidden',
-        display: '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical'
+        boxShadow: isHovered ? '0 20px 40px rgba(0, 0, 0, 0.12)' : '0 4px 12px rgba(0, 0, 0, 0.08)',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        border: '1px solid #e5e7eb',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      }}
+    >
+      {/* Image Section */}
+      <div style={{
+        width: '100%',
+        height: '200px',
+        overflow: 'hidden',
+        position: 'relative',
+        backgroundColor: '#f8fafc'
       }}>
-        {project.title}
-      </h3>
-    </div>
+        <img
+          src={project.image}
+          alt={project.title}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+            transition: 'transform 0.3s ease'
+          }}
+        />
+        <div style={{
+          position: 'absolute',
+          top: '1rem',
+          right: '1rem',
+          padding: '0.5rem 1rem',
+          backgroundColor: 'rgba(37, 99, 235, 0.95)',
+          color: 'white',
+          borderRadius: '20px',
+          fontSize: '0.8rem',
+          fontWeight: '600',
+          backdropFilter: 'blur(10px)'
+        }}>
+          {project.category}
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <h3 style={{
+          fontSize: '1.35rem',
+          fontWeight: '700',
+          color: '#1a1a1a',
+          marginBottom: '0.75rem',
+          lineHeight: '1.3',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}>
+          {project.title}
+        </h3>
+
+        <p style={{
+          fontSize: '0.95rem',
+          color: '#64748b',
+          lineHeight: '1.6',
+          marginBottom: '1rem',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          flexGrow: 1
+        }}>
+          {project.description}
+        </p>
+
+        {/* Stats */}
+        {project.stats && (
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            padding: '0.875rem',
+            backgroundColor: '#f8fafc',
+            borderRadius: '12px',
+            marginBottom: '1rem',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#64748b' }}>
+              <Users size={16} color="#2563eb" />
+              <span style={{ fontWeight: '600' }}>{project.stats.users}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#64748b' }}>
+              <Calendar size={16} color="#2563eb" />
+              <span style={{ fontWeight: '600' }}>{project.stats.year}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#10b981', fontWeight: '600' }}>
+              <TrendingUp size={16} />
+              <span>{project.stats.impact}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Tags */}
+        {project.tags && project.tags.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+            {project.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                style={{
+                  padding: '0.4rem 0.75rem',
+                  backgroundColor: '#eff6ff',
+                  color: '#1e40af',
+                  borderRadius: '8px',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  border: '1px solid #bfdbfe'
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+            {project.tags.length > 3 && (
+              <span style={{
+                padding: '0.4rem 0.75rem',
+                backgroundColor: '#f1f5f9',
+                color: '#64748b',
+                borderRadius: '8px',
+                fontSize: '0.75rem',
+                fontWeight: '600'
+              }}>
+                +{project.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingTop: '1rem',
+          borderTop: '1px solid #e5e7eb'
+        }}>
+          {project.teamName && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#64748b' }}>
+              <Users size={16} />
+              <span>{project.teamName}</span>
+            </div>
+          )}
+          {project.websiteLink && (
+            <a
+              href={project.websiteLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                color: '#25b6ebff',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                textDecoration: 'none',
+                transition: 'color 0.2s'
+              }}
+            >
+              Visit
+              <ExternalLink size={14} />
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
-// Main Projects Page Component
+// Main Projects Page
 const ProjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [projects, setProjects] = useState([]);
-  const [userRole, setUserRole] = useState('user'); // This should come from your auth system
+  const [projects, setProjects] = useState(sampleProjects);
+  const [userRole, setUserRole] = useState('user');
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '', isVisible: false });
-  const [loading, setLoading] = useState(true);
 
   const categories = ['All', 'Web App', 'Machine Learning', 'IoT', 'Mobile App', 'Research', 'Tools', 'Game'];
 
   useEffect(() => {
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      // Get user role from localStorage or JWT
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-      setUserRole(storedUser?.role || 'user');
-
-      // Build query params for category and search
-      let url = API_URL;
-      const params = [];
-      if (selectedCategory && selectedCategory !== "All") params.push(`category=${encodeURIComponent(selectedCategory)}`);
-      if (searchTerm) params.push(`search=${encodeURIComponent(searchTerm)}`);
-      if (params.length) url += "?" + params.join("&");
-
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch projects");
-      const data = await response.json();
-
-      // Map backend fields to frontend fields
-      setProjects(
-        data.map(project => ({
-          ...project,
-          image: project.image_url || "/src/assets/images/logo-techforsocial.png",
-          teamName: project.team_name,
-          websiteLink: project.website_link,
-        }))
-      );
-    } catch (error) {
-      showNotification('Failed to load projects', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchProjects();
-}, [selectedCategory, searchTerm]);
+    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    setUserRole(storedUser?.role || 'user');
+  }, []);
 
   const showNotification = (message, type) => {
     setNotification({ message, type, isVisible: true });
@@ -881,213 +1019,347 @@ const ProjectsPage = () => {
     setIsFormModalOpen(true);
   };
 
-  const handleDeleteProject = async (projectId) => {
-  if (window.confirm('Are you sure you want to delete this project?')) {
-    try {
-      // TODO: Implement DELETE API call here if you want real backend deletion
+  const handleDeleteProject = (projectId) => {
+    if (window.confirm('Are you sure you want to delete this project?')) {
       setProjects(prev => prev.filter(p => p.id !== projectId));
       showNotification('Project deleted successfully', 'success');
-    } catch (error) {
-      showNotification('Failed to delete project', 'error');
     }
-  }
-};
+  };
 
-const handleSaveProject = async (projectData) => {
-  try {
-    // TODO: Implement POST/PUT API call here if you want real backend creation/update
+  const handleSaveProject = (projectData) => {
     if (editingProject) {
-      setProjects(prev => 
-        prev.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, image: editingProject.image } : p)
+      setProjects(prev =>
+        prev.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, image: editingProject.image, stats: editingProject.stats } : p)
       );
       showNotification('Project updated successfully', 'success');
     } else {
-      const newProject = { ...projectData, id: Date.now(), image: 'https://via.placeholder.com/150' };
+      const newProject = {
+        ...projectData,
+        id: Date.now(),
+        image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=400&fit=crop',
+        stats: { users: 'New', impact: 'Medium', year: new Date().getFullYear().toString() }
+      };
       setProjects(prev => [...prev, newProject]);
       showNotification('Project created successfully', 'success');
     }
     setIsFormModalOpen(false);
-  } catch (error) {
-    showNotification('Failed to save project', 'error');
-  }
-};
-
-  const pageStyle = {
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    minHeight: '100vh',
   };
-
-  const mainStyle = {
-    maxWidth: '1280px',
-    margin: '0 auto',
-    padding: '32px 16px'
-  };
-
-  if (loading) {
-    return (
-      <div style={pageStyle}>
-        <Header />
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '50vh',
-          fontSize: '1.2rem',
-          color: '#064232'
-        }}>
-          Loading projects...
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
-    <div style={pageStyle}>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f8f9fb',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    }}>
+      {/* Header Component */}
       <Header />
-      <main style={mainStyle}>
-        {/* Page Header */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <div style={{ flex: 1 }} />
-            <h1 style={{ 
-              fontSize: '42px', 
-              fontWeight: 'bold', 
-              color: '#064232', 
-              textShadow: '0 1px 2px rgba(6, 66, 50, 0.1)',
-              margin: 0
-            }}>
-              Projects Portfolio
-            </h1>
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-              {userRole === 'admin' && (
-                <button
-                  onClick={handleAddProject}
-                  style={{
-                    backgroundColor: '#568F87',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '12px',
-                    padding: '12px 20px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    boxShadow: '0 4px 15px rgba(86, 143, 135, 0.3)',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(86, 143, 135, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 4px 15px rgba(86, 143, 135, 0.3)';
-                  }}
-                >
-                  <Plus size={16} />
-                  Add Project
-                </button>
-              )}
-            </div>
-          </div>
-          <p style={{ 
-            fontSize: '16px', 
-            color: 'rgba(6, 66, 50, 0.7)', 
-            maxWidth: '500px', 
-            margin: '0 auto', 
-            lineHeight: '1.5' 
-          }}>
-            Discover innovative solutions across web development, machine learning, IoT, and healthcare technology.
-          </p>
-        </div>
+      
+     {/* Header Section */}
+<motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  style={{
+    position: "relative",
+    overflow: "hidden",
+    padding: "4rem 5% 3rem",
+    color: "#fff",
+    textAlign: "center",
+    borderRadius: "0 0 1.5rem 1.5rem",
+  }}
+>
+  {/* 🌆 Background Image */}
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      backgroundImage:
+        "url('https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1600&q=80')", // Unsplash: people doing social work
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      filter: "brightness(0.6)", // subtle darkening
+      zIndex: 0,
+    }}
+  />
 
+  {/* 💙 Blue Transparent Overlay */}
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      background: "rgba(0, 129, 165, 0.55)", // translucent blue overlay
+      zIndex: 1,
+    }}
+  />
+
+        {/* Decorative elements */}
+<div style={{
+  position: 'absolute',
+  top: '-50%',
+  right: '-10%',
+  width: '500px',
+  height: '200px',
+  borderRadius: '50%',
+  background: 'rgba(255, 255, 255, 0.1)',
+  filter: 'blur(60px)'
+}} />
+<div style={{
+  position: 'absolute',
+  bottom: '-30%',
+  left: '-5%',
+  width: '400px',
+  height: '200px',
+  borderRadius: '50%',
+  background: 'rgba(255, 255, 255, 0.08)',
+  filter: 'blur(50px)'
+}} />
+
+<div style={{ 
+  maxWidth: '1280px', 
+  margin: '0 auto', 
+  position: 'relative', 
+  zIndex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+  minHeight: '30vh'
+}}>
+  <motion.h1
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.6, delay: 0.2 }}
+    style={{
+      fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+      fontWeight: '800',
+      color: '#ffffff',
+      marginBottom: '0.15rem',
+      letterSpacing: '-0.02em',
+      textShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+    }}
+  >
+    Projects
+  </motion.h1>
+
+  <motion.p
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: 0.3 }}
+    style={{
+      fontSize: '1.15rem',
+      color: 'rgba(255, 255, 255, 0.9)',
+      maxWidth: '600px',
+      lineHeight: '1.6',
+      marginBottom: '1rem'
+    }}
+  >
+    Discover cutting-edge technology solutions creating measurable social impact across healthcare, education, and community welfare
+  </motion.p>
+
+  {userRole === 'admin' && (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={handleAddProject}
+      style={{
+        backgroundColor: '#ffffff',
+        color: '#000000ff',
+        border: 'none',
+        borderRadius: '5px',
+        padding: '1rem 1rem',
+        fontSize: '1rem',
+        fontWeight: '700',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.15rem',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+        transition: 'all 0.3s ease'
+      }}
+    >
+      <Plus size={20} />
+      Add New Project
+    </motion.button>
+  )}
+  </div>
+</motion.div>
+
+
+      {/* Main Content */}
+      <div style={{ 
+        maxWidth: '1280px', 
+        margin: '0 auto', 
+        padding: '3rem 5%',
+        backgroundImage: backgroundPattern
+      }}>
         {/* Search and Filter Section */}
-        <div style={{ marginBottom: '32px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Search Bar */}
-            <div style={{ position: 'relative', width: '100%', maxWidth: '350px' }}>
-              <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(6, 66, 50, 0.5)' }} size={18} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '20px',
+            padding: '2rem',
+            marginBottom: '3rem',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
+            border: '1px solid #e5e7eb'
+          }}
+        >
+          {/* Search Bar */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ position: 'relative', maxWidth: '500px' }}>
+              <Search
+                style={{
+                  position: 'absolute',
+                  left: '1.25rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#94a3b8'
+                }}
+                size={20}
+              />
               <input
                 type="text"
-                placeholder="Search projects..."
+                placeholder="Search projects by name, description, or technology..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
-                  paddingLeft: '40px',
-                  paddingRight: '16px',
-                  paddingTop: '10px',
-                  paddingBottom: '10px',
-                  borderRadius: '25px',
-                  border: '1px solid rgba(86, 143, 135, 0.2)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  fontSize: '14px',
+                  paddingLeft: '3.5rem',
+                  paddingRight: '1.25rem',
+                  paddingTop: '1rem',
+                  paddingBottom: '1rem',
+                  borderRadius: '14px',
+                  border: '2px solid #e5e7eb',
+                  backgroundColor: '#f8fafc',
+                  fontSize: '0.95rem',
                   outline: 'none',
-                  boxShadow: '0 2px 8px rgba(6, 66, 50, 0.08)',
-                  backdropFilter: 'blur(10px)',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.2s',
+                  fontFamily: 'inherit'
                 }}
               />
             </div>
+          </div>
 
-            {/* Category Filter */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
+          {/* Category Filter */}
+          <div>
+            <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Filter by Category
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
               {categories.map((category) => (
-                <button
+                <motion.button
                   key={category}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedCategory(category)}
                   style={{
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    fontSize: '13px',
-                    fontWeight: '500',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '12px',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
                     border: 'none',
                     cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    backgroundColor: selectedCategory === category 
-                      ? 'rgba(86, 143, 135, 0.9)' 
-                      : 'rgba(245, 186, 187, 0.4)',
-                    color: selectedCategory === category ? 'white' : '#064232',
-                    boxShadow: selectedCategory === category 
-                      ? '0 2px 8px rgba(86, 143, 135, 0.3)' 
-                      : '0 1px 3px rgba(6, 66, 50, 0.1)',
-                    backdropFilter: 'blur(10px)'
+                    transition: 'all 0.2s',
+                    backgroundColor: selectedCategory === category ? '#2563eb' : '#f1f5f9',
+                    color: selectedCategory === category ? 'white' : '#475569',
+                    boxShadow: selectedCategory === category ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
                   }}
                 >
                   {category}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Stats Overview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '3rem'
+          }}
+        >
+          {[
+            { label: 'Total Projects', value: projects.length, color: '#2563eb' },
+            { label: 'Active Research', value: projects.filter(p => p.category === 'Research').length, color: '#7c3aed' },
+            { label: 'AI/ML Projects', value: projects.filter(p => p.category === 'Machine Learning').length, color: '#059669' },
+            { label: 'Live Deployments', value: projects.filter(p => p.websiteLink).length, color: '#ea580c' }
+          ].map((stat, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+              style={{
+                backgroundColor: '#ffffff',
+                padding: '1.5rem',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #e5e7eb',
+                borderLeft: `4px solid ${stat.color}`
+              }}
+            >
+              <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {stat.label}
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: '800', color: stat.color }}>
+                {stat.value}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Projects Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-          {filteredProjects.map((project) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              onClick={handleCardClick}
-            />
-          ))}
-        </div>
-
-        {/* No Results Message */}
-        {filteredProjects.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <p style={{ fontSize: '18px', color: 'rgba(6, 66, 50, 0.6)', marginBottom: '8px' }}>No projects found</p>
-            <p style={{ color: 'rgba(6, 66, 50, 0.4)', fontSize: '14px' }}>Try adjusting your search terms or filters</p>
+        {filteredProjects.length > 0 ? (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gap: '2rem'
+          }}>
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} onClick={handleCardClick} />
+            ))}
           </div>
-        )}
-      </main>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              textAlign: 'center',
+              padding: '4rem 2rem',
+              backgroundColor: '#ffffff',
+              borderRadius: '20px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)'
+            }}
+          >
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+              No Projects Found
+            </h3>
+            <p style={{ color: '#64748b', fontSize: '1rem' }}>
+              Try adjusting your search terms or filters
+            </p>
+          </motion.div>
+       )}
+      </div>
 
-      {/* Project Details Modal */}
+      {/* Footer Component */}
+      <Footer />
+
+      {/* Modals and Notifications */}
+
+      {/* Modals and Notifications */}
       <ProjectDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
@@ -1097,7 +1369,6 @@ const handleSaveProject = async (projectData) => {
         onDelete={handleDeleteProject}
       />
 
-      {/* Project Form Modal */}
       <ProjectFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
@@ -1106,15 +1377,12 @@ const handleSaveProject = async (projectData) => {
         isEditing={!!editingProject}
       />
 
-      {/* Notification */}
       <Notification
         message={notification.message}
         type={notification.type}
         isVisible={notification.isVisible}
         onClose={hideNotification}
       />
-
-      <Footer />
     </div>
   );
 };
